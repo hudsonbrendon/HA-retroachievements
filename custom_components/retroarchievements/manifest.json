@@ -1,0 +1,13 @@
+{
+  "domain": "retroarchievements",
+  "name": "RetroAchievements",
+  "codeowners": [
+    "@hudsonbrendon"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/hudsonbrendon/ha-retroachievements",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/hudsonbrendon/ha-retroachievements/issues",
+  "version": "0.1.0",
+  "requirements": []
+}
