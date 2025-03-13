@@ -11,6 +11,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import (
+    RetroAchievementsApiClient,
     RetroAchievementsApiClientAuthenticationError,
     RetroAchievementsApiClientError,
 )
@@ -24,9 +25,11 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         config_entry: ConfigEntry,
+        client: RetroAchievementsApiClient,
     ) -> None:
         """Initialize the coordinator."""
         self.config_entry = config_entry
+        self.client = client
         super().__init__(
             hass,
             LOGGER,
@@ -37,7 +40,8 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from RetroAchievements API."""
         try:
-            client = self.hass.data[DOMAIN][self.config_entry.entry_id]["client"]
+            # Use the stored client reference directly
+            client = self.client
 
             # Get user summary data
             user_summary = await client.async_get_user_summary()
