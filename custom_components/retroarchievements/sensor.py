@@ -2,24 +2,17 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
-
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .api import RetroAchievementsApiClient
 from .const import (
     ATTR_ACHIEVEMENTS_EARNED,
     ATTR_ACHIEVEMENTS_TOTAL,
@@ -29,11 +22,10 @@ from .const import (
     ATTR_GAME_TITLE,
     ATTR_POINTS_EARNED,
     ATTR_POINTS_TOTAL,
-    CONF_API_KEY,
     CONF_USERNAME,
     DOMAIN,
-    LOGGER,
 )
+from .coordinator import RetroAchievementsDataUpdateCoordinator
 
 # Define sensor descriptions for user profile
 USER_SENSORS = [
@@ -79,54 +71,36 @@ async def async_setup_entry(
 ) -> None:
     """Set up RetroAchievements sensors based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    api_key = entry.data[CONF_API_KEY]
-
-    session = async_create_clientsession(hass)
-    client = RetroAchievementsApiClient(
-        username=username,
-        api_key=api_key,
-        session=session,
-    )
-
-    # Create coordinator to manage API calls
-    coordinator = DataUpdateCoordinator(
-        hass,
-        LOGGER,
-        name=DOMAIN,
-        update_method=client.async_get_user_summary,
-        update_interval=timedelta(minutes=30),  # Update every 30 minutes
-    )
-
-    # Fetch initial data
-    await coordinator.async_config_entry_first_refresh()
+    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
 
     entities = []
 
     # Create device for the user - this will group all user-related sensors
-    if coordinator.data:
+    if coordinator.data and "user_summary" in coordinator.data:
+        user_data = coordinator.data["user_summary"]
         # Create user sensors
         for description in USER_SENSORS:
             entities.append(
                 RetroAchievementsUserSensor(
                     coordinator=coordinator,
-                    entry=entry,
+                    username=username,
                     description=description,
                 )
             )
 
         # Create recent achievements sensor
-        if "RecentAchievements" in coordinator.data:
+        if "RecentAchievements" in user_data:
             entities.append(
                 RetroAchievementsRecentAchievementsSensor(
                     coordinator=coordinator,
-                    entry=entry,
+                    username=username,
                 )
             )
 
     # Create game sensors
-    if coordinator.data and "RecentlyPlayed" in coordinator.data:
-        for game in coordinator.data["RecentlyPlayed"]:
-            entities.append(RetroAchievementsGameSensor(coordinator, entry, game))
+    if coordinator.data and "recent_games" in coordinator.data:
+        for game in coordinator.data["recent_games"]:
+            entities.append(RetroAchievementsGameSensor(coordinator, username, game))
 
     # Add entities
     async_add_entities(entities, True)
@@ -137,14 +111,13 @@ class RetroAchievementsBaseSensor(CoordinatorEntity, SensorEntity):
 
     def __init__(
         self,
-        coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
         description: SensorEntityDescription = None,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
-        self.entry = entry
-        self.username = entry.data[CONF_USERNAME]
+        self.username = username
 
         if description:
             self.entity_description = description
@@ -175,22 +148,22 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
 
     def __init__(
         self,
-        coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
         description: SensorEntityDescription,
     ) -> None:
         """Initialize user sensor."""
-        super().__init__(coordinator, entry, description)
+        super().__init__(coordinator, username, description)
         self._key = description.key
         self._attr_entity_category = description.entity_category
 
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        if not self.coordinator.data:
+        if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return None
 
-        data = self.coordinator.data
+        data = self.coordinator.data["user_summary"]
 
         # Get value based on sensor key
         if self._key == "total_points":
@@ -204,17 +177,17 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         if self._key == "rich_presence":
             return data.get("RichPresenceMsg", "")
         if self._key == "recently_played_count":
-            return len(data.get("RecentlyPlayed", []))
+            return len(self.coordinator.data.get("recent_games", []))
 
         return None
 
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        data = self.coordinator.data
-
-        if not data:
+        if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return {}
+
+        data = self.coordinator.data["user_summary"]
 
         # Add common attributes to all user sensors
         attrs = {
@@ -232,11 +205,11 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
 
     def __init__(
         self,
-        coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
     ) -> None:
         """Initialize the sensor."""
-        super().__init__(coordinator, entry)
+        super().__init__(coordinator, username)
         self._attr_unique_id = f"{DOMAIN}_{self.username}_recent_achievements"
         self._attr_translation_key = "recent_achievements"
         self._attr_has_entity_name = True
@@ -292,9 +265,9 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
 class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
     """Representation of a RetroAchievements game sensor."""
 
-    def __init__(self, coordinator, entry, game_data):
+    def __init__(self, coordinator, username, game_data):
         """Initialize the sensor."""
-        super().__init__(coordinator, entry)
+        super().__init__(coordinator, username)
         self._game_data = game_data
         self._game_id = game_data.get("GameID")
         self._game_title = game_data.get("Title")
