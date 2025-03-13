@@ -39,11 +39,13 @@ USER_SENSORS = [
         key="total_points",
         translation_key="total_points",
         icon="mdi:trophy",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="true_points",
         translation_key="true_points",
         icon="mdi:trophy-award",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="rank",
@@ -66,6 +68,7 @@ USER_SENSORS = [
         key="recently_played_count",
         translation_key="recently_played_count",
         icon="mdi:controller",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 ]
 
@@ -80,7 +83,6 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
 
     entities = []
-
     # Create device for the user - this will group all user-related sensors
     if coordinator.data and "user_summary" in coordinator.data:
         user_data = coordinator.data["user_summary"]
@@ -93,7 +95,6 @@ async def async_setup_entry(
                     description=description,
                 )
             )
-
         # Create recent achievements sensor
         if "RecentAchievements" in user_data:
             entities.append(
@@ -102,7 +103,6 @@ async def async_setup_entry(
                     username=username,
                 )
             )
-
     # Create game sensors
     if coordinator.data and "recent_games" in coordinator.data:
         for game in coordinator.data["recent_games"]:
@@ -124,13 +124,11 @@ class RetroAchievementsBaseSensor(CoordinatorEntity, SensorEntity):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self.username = username
-
         if description:
             self.entity_description = description
             self._attr_unique_id = f"{DOMAIN}_{self.username}_{description.key}"
             self._attr_has_entity_name = True
             self._attr_translation_key = description.translation_key
-
         # Create a device for the user profile
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
@@ -161,12 +159,10 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Initialize user sensor."""
         super().__init__(coordinator, username, description)
         self._key = description.key
-
         # Special handling for username sensor - set entity_category for all other sensors
         # but not for the username sensor
         if self._key != "username" and hasattr(description, "entity_category"):
             self._attr_entity_category = description.entity_category
-
         # Keep translation_key for all sensors to ensure proper naming in the UI
         # For username sensor, we want it to be shown as "Username"/"Usuario" instead of the actual username
         # This ensures that the entity will be named according to the translation files
@@ -177,9 +173,7 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Return the state of the sensor."""
         if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return None
-
         data = self.coordinator.data["user_summary"]
-
         # Get value based on sensor key
         if self._key == "username":
             return self.username
@@ -195,7 +189,6 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
             return data.get("RichPresenceMsg", "")
         if self._key == "recently_played_count":
             return len(self.coordinator.data.get("recent_games", []))
-
         return None
 
     @property
@@ -203,9 +196,7 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Return the state attributes."""
         if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return {}
-
         data = self.coordinator.data["user_summary"]
-
         # Only add attributes to username sensor
         if self._key == "username":
             return {
@@ -214,7 +205,6 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 "profile_url": f"https://retroachievements.org/user/{self.username}",
                 "profile_pic": f"https://retroachievements.org{data.get('UserPic', '')}",
             }
-
         return {}
 
 
@@ -232,6 +222,7 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
         self._attr_translation_key = "recent_achievements"
         self._attr_has_entity_name = True
         self._attr_icon = "mdi:trophy-outline"
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def native_value(self):
@@ -320,13 +311,11 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
     def native_value(self):
         """Return the state of the sensor - completion percentage."""
         achievement_data = self._get_achievement_data()
-
         if achievement_data:
             total = achievement_data.get("NumPossibleAchievements", 0)
             earned = achievement_data.get("NumAchieved", 0)
             if total > 0:
                 return f"{round((earned / total) * 100)}%"
-
         return "0%"
 
     @property
