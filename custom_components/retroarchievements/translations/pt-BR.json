@@ -1,0 +1,118 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "RetroAchievements",
+                "description": "Configure a integração RetroAchievements.",
+                "data": {
+                    "username": "Nome de usuário",
+                    "api_key": "Chave da API"
+                }
+            }
+        },
+        "error": {
+            "auth": "Nome de usuário ou chave da API inválidos.",
+            "connection": "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
+            "unknown": "Erro desconhecido ocorreu."
+        },
+        "abort": {
+            "already_configured": "Essa conta RetroAchievements já está configurada."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Opções RetroAchievements",
+                "description": "Configure opções para RetroAchievements.",
+                "data": {
+                    "monitored_games": "IDs de jogos para monitorar (um ID por linha)"
+                }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "total_points": {
+                "name": "Pontos Totais",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "true_points": {
+                "name": "Pontos Verdadeiros",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "rank": {
+                "name": "Classificação",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "status": {
+                "name": "Status",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "rich_presence": {
+                "name": "Presença Rica",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "recently_played_count": {
+                "name": "Quantidade de Jogos Recentes",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "recent_achievements": {
+                "name": "Conquistas Recentes",
+                "state_attributes": {
+                    "achievements": "Conquistas"
+                }
+            },
+            "game": {
+                "name": "Jogo",
+                "state_attributes": {
+                    "game_id": "ID do Jogo",
+                    "game_title": "Título do Jogo",
+                    "console_name": "Nome do Console",
+                    "console_id": "ID do Console",
+                    "last_played": "Último Jogado",
+                    "image_icon": "Ícone do Jogo",
+                    "image_boxart": "Capa do Jogo",
+                    "game_url": "URL do Jogo",
+                    "achievements_total": "Conquistas Totais",
+                    "achievements_earned": "Conquistas Obtidas",
+                    "points_total": "Pontos Totais",
+                    "points_earned": "Pontos Obtidos",
+                    "hardcore_achievements_earned": "Conquistas Hardcore Obtidas",
+                    "hardcore_points_earned": "Pontos Hardcore Obtidos",
+                    "completion_percentage": "Porcentagem de Conclusão",
+                    "achievements": "Conquistas"
+                }
+            }
+        }
+    }
+}

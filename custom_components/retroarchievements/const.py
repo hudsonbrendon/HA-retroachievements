@@ -15,9 +15,7 @@ CONF_MONITORED_GAMES = "monitored_games"
 
 # Defaults
 DEFAULT_NAME = "RetroAchievements"
-
-# Default update interval
-DEFAULT_UPDATE_INTERVAL = 30  # minutes
+DEFAULT_SCAN_INTERVAL = 30  # minutes
 
 # Entity attributes
 ATTR_GAME_ID = "game_id"
@@ -30,3 +28,6 @@ ATTR_COMPLETION_PERCENTAGE = "completion_percentage"
 ATTR_POINTS_TOTAL = "points_total"
 ATTR_POINTS_EARNED = "points_earned"
 ATTR_RANK = "rank"
+
+# Attribution
+ATTRIBUTION = "Data provided by RetroAchievements"

@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "RetroAchievements",
-                "description": "Enter your RetroAchievements credentials",
+                "description": "Set up RetroAchievements integration.",
                 "data": {
                     "username": "Username",
                     "api_key": "API Key"
@@ -11,20 +11,105 @@
             }
         },
         "error": {
-            "auth": "Username or API Key is incorrect.",
-            "connection": "Unable to connect to the RetroAchievements API.",
+            "auth": "Username or API key is invalid.",
+            "connection": "Failed to connect to the server. Check your internet connection.",
             "unknown": "Unknown error occurred."
         },
         "abort": {
-            "already_configured": "Account is already configured"
+            "already_configured": "This RetroAchievements account is already configured."
         }
     },
     "options": {
         "step": {
             "init": {
                 "title": "RetroAchievements Options",
+                "description": "Configure options for RetroAchievements.",
                 "data": {
-                    "monitored_games": "Monitored games (one game ID per line)"
+                    "monitored_games": "Game IDs to monitor (one ID per line)"
+                }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "total_points": {
+                "name": "Total Points",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "true_points": {
+                "name": "True Points",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "rank": {
+                "name": "Rank",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "status": {
+                "name": "Status",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "rich_presence": {
+                "name": "Rich Presence",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "recently_played_count": {
+                "name": "Recently Played Games Count",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
+            "recent_achievements": {
+                "name": "Recent Achievements",
+                "state_attributes": {
+                    "achievements": "Achievements"
+                }
+            },
+            "game": {
+                "state_attributes": {
+                    "game_id": "Game ID",
+                    "game_title": "Game Title",
+                    "console_name": "Console Name",
+                    "console_id": "Console ID",
+                    "last_played": "Last Played",
+                    "image_icon": "Icon Image",
+                    "image_boxart": "Box Art Image",
+                    "game_url": "Game URL",
+                    "achievements_total": "Total Achievements",
+                    "achievements_earned": "Earned Achievements",
+                    "points_total": "Total Points",
+                    "points_earned": "Earned Points",
+                    "hardcore_achievements_earned": "Earned Hardcore Achievements",
+                    "hardcore_points_earned": "Earned Hardcore Points",
+                    "completion_percentage": "Completion Percentage",
+                    "achievements": "Achievements"
                 }
             }
         }
