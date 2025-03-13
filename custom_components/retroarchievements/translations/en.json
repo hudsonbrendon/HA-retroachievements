@@ -1,0 +1,32 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "RetroAchievements",
+                "description": "Enter your RetroAchievements credentials",
+                "data": {
+                    "username": "Username",
+                    "api_key": "API Key"
+                }
+            }
+        },
+        "error": {
+            "auth": "Username or API Key is incorrect.",
+            "connection": "Unable to connect to the RetroAchievements API.",
+            "unknown": "Unknown error occurred."
+        },
+        "abort": {
+            "already_configured": "Account is already configured"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "RetroAchievements Options",
+                "data": {
+                    "monitored_games": "Monitored games (one game ID per line)"
+                }
+            }
+        }
+    }
+}
