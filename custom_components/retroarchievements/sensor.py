@@ -38,32 +38,32 @@ from .const import (
 USER_SENSORS = [
     SensorEntityDescription(
         key="total_points",
-        name="Total Points",
+        translation_key="total_points",
         icon="mdi:trophy",
     ),
     SensorEntityDescription(
         key="true_points",
-        name="True Points",
+        translation_key="true_points",
         icon="mdi:trophy-award",
     ),
     SensorEntityDescription(
         key="rank",
-        name="Rank",
+        translation_key="rank",
         icon="mdi:podium",
     ),
     SensorEntityDescription(
         key="status",
-        name="Status",
+        translation_key="status",
         icon="mdi:account-check",
     ),
     SensorEntityDescription(
         key="rich_presence",
-        name="Rich Presence",
+        translation_key="rich_presence",
         icon="mdi:gamepad-variant",
     ),
     SensorEntityDescription(
         key="recently_played_count",
-        name="Recently Played Games Count",
+        translation_key="recently_played_count",
         icon="mdi:controller",
     ),
 ]
@@ -146,7 +146,8 @@ class RetroAchievementsBaseSensor(CoordinatorEntity, SensorEntity):
         if description:
             self.entity_description = description
             self._attr_unique_id = f"{DOMAIN}_{self.username}_{description.key}"
-            self._attr_name = f"{description.name}"
+            self._attr_has_entity_name = True
+            self._attr_translation_key = description.translation_key
 
         # Create a device for the user profile
         self._attr_device_info = DeviceInfo(
@@ -233,7 +234,8 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
         """Initialize the sensor."""
         super().__init__(coordinator, entry)
         self._attr_unique_id = f"{DOMAIN}_{self.username}_recent_achievements"
-        self._attr_name = "Recent Achievements"
+        self._attr_translation_key = "recent_achievements"
+        self._attr_has_entity_name = True
         self._attr_icon = "mdi:trophy-outline"
 
     @property
@@ -268,18 +270,17 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
             "RecentAchievements"
         ].items():
             for ach_id, achievement in achievements.items():
-                recent_achievements.append(
-                    {
-                        "id": achievement.get("ID"),
-                        "title": achievement.get("Title"),
-                        "description": achievement.get("Description"),
-                        "points": achievement.get("Points"),
-                        "game": achievement.get("GameTitle"),
-                        "date_awarded": achievement.get("DateAwarded"),
-                        "image": f"https://retroachievements.org/Badge/{achievement.get('BadgeName')}.png",
-                        "url": f"https://retroachievements.org/achievement/{achievement.get('ID')}",
-                    }
-                )
+                achievement_data = {
+                    "id": achievement.get("ID"),
+                    "title": achievement.get("Title"),
+                    "description": achievement.get("Description"),
+                    "points": achievement.get("Points"),
+                    "game": achievement.get("GameTitle"),
+                    "date_awarded": achievement.get("DateAwarded"),
+                    "image": f"https://retroachievements.org/Badge/{achievement.get('BadgeName')}.png",
+                    "url": f"https://retroachievements.org/achievement/{achievement.get('ID')}",
+                }
+                recent_achievements.append(achievement_data)
 
         return {"achievements": recent_achievements}
 
@@ -298,6 +299,8 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         self._attr_unique_id = f"{DOMAIN}_{self.username}_game_{self._game_id}"
         self._attr_name = self._game_title
         self._attr_icon = "mdi:gamepad-variant"
+        self._attr_has_entity_name = False
+        self._attr_translation_key = "game"
 
         # Create a device for each game
         self._attr_device_info = DeviceInfo(
