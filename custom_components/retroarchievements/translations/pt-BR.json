@@ -32,59 +32,32 @@
     },
     "entity": {
         "sensor": {
-            "total_points": {
-                "name": "Pontos Totais",
+            "username": {
+                "name": "Nome de Usuário",
                 "state_attributes": {
                     "id": "ID",
                     "member_since": "Membro desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
+            },
+            "total_points": {
+                "name": "Pontos Totais"
             },
             "true_points": {
-                "name": "Pontos Verdadeiros",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Pontos Verdadeiros"
             },
             "rank": {
-                "name": "Classificação",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Classificação"
             },
             "status": {
-                "name": "Status",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Status"
             },
             "rich_presence": {
-                "name": "Presença Rica",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Presença Rica"
             },
             "recently_played_count": {
-                "name": "Quantidade de Jogos Recentes",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Quantidade de Jogos Recentes"
             },
             "recent_achievements": {
                 "name": "Conquistas Recentes",
