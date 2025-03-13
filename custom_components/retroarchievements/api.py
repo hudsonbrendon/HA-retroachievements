@@ -65,7 +65,8 @@ class RetroAchievementsApiClient:
                 "y": self._api_key,
             },
         )
-        return response.get("RecentlyPlayed", [])
+        # The API returns a list directly, not a dict with a "RecentlyPlayed" key
+        return response if isinstance(response, list) else []
 
     async def async_get_game_info(self, game_id: int) -> dict[str, Any]:
         """Get information about a specific game."""

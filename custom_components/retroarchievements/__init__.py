@@ -9,6 +9,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import RetroAchievementsApiClient
 from .const import CONF_API_KEY, CONF_USERNAME, DOMAIN, LOGGER
+from .coordinator import RetroAchievementsDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
@@ -25,9 +26,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         session=session,
     )
 
-    # Store API client and config entry in hass data
+    # Create coordinator
+    coordinator = RetroAchievementsDataUpdateCoordinator(hass, entry, client)
+    await coordinator.async_config_entry_first_refresh()
+
+    # Store API client, coordinator and config entry in hass data
     hass.data[DOMAIN][entry.entry_id] = {
         "client": client,
+        "coordinator": coordinator,
         "config": entry.data,
     }
 
