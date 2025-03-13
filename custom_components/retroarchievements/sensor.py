@@ -30,6 +30,12 @@ from .coordinator import RetroAchievementsDataUpdateCoordinator
 # Define sensor descriptions for user profile
 USER_SENSORS = [
     SensorEntityDescription(
+        key="username",
+        translation_key="username",
+        icon="mdi:account",
+        # Removed entity_category=EntityCategory.DIAGNOSTIC to move from diagnostic section
+    ),
+    SensorEntityDescription(
         key="total_points",
         translation_key="total_points",
         icon="mdi:trophy",
@@ -155,7 +161,16 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Initialize user sensor."""
         super().__init__(coordinator, username, description)
         self._key = description.key
-        self._attr_entity_category = description.entity_category
+
+        # Special handling for username sensor - set entity_category for all other sensors
+        # but not for the username sensor
+        if self._key != "username" and hasattr(description, "entity_category"):
+            self._attr_entity_category = description.entity_category
+
+        # Keep translation_key for all sensors to ensure proper naming in the UI
+        # For username sensor, we want it to be shown as "Username"/"Usuario" instead of the actual username
+        # This ensures that the entity will be named according to the translation files
+        self._attr_has_entity_name = True
 
     @property
     def native_value(self):
@@ -166,6 +181,8 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         data = self.coordinator.data["user_summary"]
 
         # Get value based on sensor key
+        if self._key == "username":
+            return self.username
         if self._key == "total_points":
             return data.get("TotalPoints", 0)
         if self._key == "true_points":
@@ -189,15 +206,16 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
 
         data = self.coordinator.data["user_summary"]
 
-        # Add common attributes to all user sensors
-        attrs = {
-            "id": data.get("ID"),
-            "member_since": data.get("MemberSince"),
-            "profile_url": f"https://retroachievements.org/user/{self.username}",
-            "profile_pic": f"https://retroachievements.org{data.get('UserPic', '')}",
-        }
+        # Only add attributes to username sensor
+        if self._key == "username":
+            return {
+                "id": data.get("ID"),
+                "member_since": data.get("MemberSince"),
+                "profile_url": f"https://retroachievements.org/user/{self.username}",
+                "profile_pic": f"https://retroachievements.org{data.get('UserPic', '')}",
+            }
 
-        return attrs
+        return {}
 
 
 class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
