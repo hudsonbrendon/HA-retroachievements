@@ -15,7 +15,7 @@ CONF_MONITORED_GAMES = "monitored_games"
 
 # Defaults
 DEFAULT_NAME = "RetroAchievements"
-DEFAULT_SCAN_INTERVAL = 30  # minutes
+DEFAULT_SCAN_INTERVAL = 1  # minutes
 
 # Entity attributes
 ATTR_GAME_ID = "game_id"
