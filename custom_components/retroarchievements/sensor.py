@@ -12,6 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -50,11 +51,13 @@ USER_SENSORS = [
         key="rank",
         translation_key="rank",
         icon="mdi:podium",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="status",
         translation_key="status",
         icon="mdi:account-check",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="rich_presence",
@@ -179,6 +182,7 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Initialize user sensor."""
         super().__init__(coordinator, entry, description)
         self._key = description.key
+        self._attr_entity_category = description.entity_category
 
     @property
     def native_value(self):
