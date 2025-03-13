@@ -32,6 +32,9 @@
     },
     "entity": {
         "sensor": {
+            "username": {
+                "name": "Username"
+            },
             "total_points": {
                 "name": "Total Points",
                 "state_attributes": {
