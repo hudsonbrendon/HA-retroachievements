@@ -34,60 +34,70 @@ The integration provides the following entities:
 
 | Sensor | Description | Attributes |
 |--------|-------------|------------|
-| `sensor.retroachievements_USERNAME_total_points` | Total points earned across all games | Profile details including ID, member since date, profile URL, profile picture |
+| `sensor.retroachievements_USERNAME_points` | Total points earned across all games | Profile details including ID, member since date, profile URL, profile picture |
 | `sensor.retroachievements_USERNAME_true_points` | Total true points (weighted score) | Same as above |
 | `sensor.retroachievements_USERNAME_rank` | Global rank on RetroAchievements | Same as above |
-| `sensor.retroachievements_USERNAME_status` | Account status | Same as above |
-| `sensor.retroachievements_USERNAME_rich_presence` | Current activity status | Same as above |
-| `sensor.retroachievements_USERNAME_recently_played_count` | Number of recently played games | Same as above |
-| `sensor.retroachievements_USERNAME_recent_achievements` | Number of recently unlocked achievements | List of recently unlocked achievements with details |
+| `sensor.retroachievements_USERNAME_status` | Account status (Online/Offline) | Same as above |
+| `sensor.retroachievements_USERNAME_rich_presence` | Current gaming activity status | Same as above |
+| `sensor.retroachievements_USERNAME_games_count` | Number of games played | Same as above |
+| `sensor.retroachievements_USERNAME_completed_games_count` | Number of games completed | Same as above |
+| `sensor.retroachievements_USERNAME_completion_percentage` | Overall completion percentage | Same as above |
+| `sensor.retroachievements_USERNAME_achievements_unlocked` | Number of achievements unlocked | Same as above |
+| `sensor.retroachievements_USERNAME_recent_achievements` | Count of recently unlocked achievements | List of recently unlocked achievements with details |
 
 ### Game-specific Sensors
 
-For each recently played game, the integration creates a sensor:
+For each recently played game, the integration creates:
 
 | Sensor | Description | Attributes |
 |--------|-------------|------------|
-| `sensor.GAME_TITLE` | Completion percentage for the game | Game details including ID, console, achievements (total/earned), points (total/earned), last played date, game images, and recently unlocked achievements |
+| `sensor.retroachievements_game_GAME_ID` | Completion percentage for the game | Game details including ID, console, achievements (total/earned), points (total/earned), last played date, game images, and recently unlocked achievements |
 
 All game sensors are grouped under your RetroAchievements user device for easy organization.
 
 ## Attributes
 
 ### User Profile Attributes
-- `id`: Your RetroAchievements user ID
+- `user_id`: Your RetroAchievements user ID
+- `username`: Your RetroAchievements username
+- `display_name`: Your display name on RetroAchievements
 - `member_since`: Date you joined RetroAchievements
 - `profile_url`: Link to your RetroAchievements profile
-- `profile_pic`: URL to your profile picture
+- `profile_image`: URL to your profile picture
+- `last_update`: Timestamp of the last data update
 
 ### Recent Achievements Attributes
-- `achievements`: List of recently unlocked achievements containing:
-  - `id`: Achievement ID
+- `recent_achievements`: List of recently unlocked achievements containing:
+  - `achievement_id`: Achievement ID
   - `title`: Achievement name
   - `description`: Achievement description
   - `points`: Points value
-  - `game`: Game title
-  - `date_awarded`: When the achievement was unlocked
-  - `image`: URL to the achievement badge
-  - `url`: Link to the achievement page
+  - `badge_url`: URL to the achievement badge
+  - `game_id`: ID of the game
+  - `game_title`: Title of the game
+  - `console_name`: Console name
+  - `unlocked_date`: When the achievement was unlocked
 
 ### Game Sensor Attributes
 - `game_id`: RetroAchievements game ID
 - `game_title`: Game name
 - `console_name`: Console name
 - `console_id`: Console ID
+- `developer`: Game developer name (if available)
+- `publisher`: Game publisher name (if available)
+- `genre`: Game genre (if available)
+- `release_date`: Game release date (if available)
 - `last_played`: Last played timestamp
 - `image_icon`: Game icon URL
-- `image_boxart`: Game box art URL
-- `game_url`: Link to game page
+- `image_box_art`: Game box art URL
+- `image_title`: Game title screen image URL
+- `image_ingame`: In-game screenshot URL
 - `achievements_total`: Total number of achievements
 - `achievements_earned`: Number of earned achievements
 - `points_total`: Total possible points
 - `points_earned`: Points earned
 - `completion_percentage`: Game completion percentage
-- `hardcore_achievements_earned`: Achievements earned in hardcore mode
-- `hardcore_points_earned`: Points earned in hardcore mode
-- `achievements`: List of recently unlocked achievements for this game
+- `recent_achievements`: List of recently unlocked achievements for this game
 
 ## Use Cases
 
