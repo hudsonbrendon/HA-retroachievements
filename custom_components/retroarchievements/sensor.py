@@ -27,13 +27,11 @@ from .const import (
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
-# Define sensor descriptions for user profile
 USER_SENSORS = [
     SensorEntityDescription(
         key="username",
         translation_key="username",
         icon="mdi:account",
-        # Removed entity_category=EntityCategory.DIAGNOSTIC to move from diagnostic section
     ),
     SensorEntityDescription(
         key="total_points",
@@ -71,7 +69,6 @@ USER_SENSORS = [
         icon="mdi:controller",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
-    # Add the recently_played sensor here as part of the user sensors
     SensorEntityDescription(
         key="recently_played",
         translation_key="recently_played",
@@ -90,10 +87,8 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
 
     entities = []
-    # Create device for the user - this will group all user-related sensors
     if coordinator.data and "user_summary" in coordinator.data:
         user_data = coordinator.data["user_summary"]
-        # Create user sensors
         for description in USER_SENSORS:
             entities.append(
                 RetroAchievementsUserSensor(
@@ -102,7 +97,6 @@ async def async_setup_entry(
                     description=description,
                 )
             )
-        # Create recent achievements sensor
         if "RecentAchievements" in user_data:
             entities.append(
                 RetroAchievementsRecentAchievementsSensor(
@@ -110,7 +104,6 @@ async def async_setup_entry(
                     username=username,
                 )
             )
-        # Create recently played games sensors
         if "RecentlyPlayed" in user_data:
             for game in user_data["RecentlyPlayed"]:
                 entities.append(
@@ -121,15 +114,10 @@ async def async_setup_entry(
                     )
                 )
 
-            # Remove RecentlyPlayedGameSensor since we're now handling recently_played in USER_SENSORS
-            # The recently_played sensor will now be created with other user sensors
-
-    # Create game sensors
     if coordinator.data and "recent_games" in coordinator.data:
         for game in coordinator.data["recent_games"]:
             entities.append(RetroAchievementsGameSensor(coordinator, username, game))
 
-    # Add entities
     async_add_entities(entities, True)
 
 
@@ -150,7 +138,6 @@ class RetroAchievementsBaseSensor(CoordinatorEntity, SensorEntity):
             self._attr_unique_id = f"{DOMAIN}_{self.username}_{description.key}"
             self._attr_has_entity_name = True
             self._attr_translation_key = description.translation_key
-        # Create a device for the user profile
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, f"{self.username}")},
@@ -180,22 +167,17 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         """Initialize user sensor."""
         super().__init__(coordinator, username, description)
         self._key = description.key
-        # Special handling for username sensor - set entity_category for all other sensors
-        # but not for the username sensor
+
         if self._key != "username" and hasattr(description, "entity_category"):
             self._attr_entity_category = description.entity_category
-        # Keep translation_key for all sensors to ensure proper naming in the UI
-        # For username sensor, we want it to be shown as "Username"/"Usuario" instead of the actual username
-        # This ensures that the entity will be named according to the translation files
+
         self._attr_has_entity_name = True
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
         if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return None
         data = self.coordinator.data["user_summary"]
-        # Get value based on sensor key
         if self._key == "username":
             return self.username
         if self._key == "total_points":
@@ -211,7 +193,6 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         if self._key == "recently_played_count":
             return len(self.coordinator.data.get("recent_games", []))
         if self._key == "recently_played":
-            # Return the title of the most recently played game if available
             if data.get("RecentlyPlayed") and len(data.get("RecentlyPlayed", [])) > 0:
                 recent_game = data["RecentlyPlayed"][0]
                 return f"{recent_game.get('Title')} - {recent_game.get('ConsoleName')}"
@@ -282,7 +263,6 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
             or "RecentAchievements" not in self.coordinator.data
         ):
             return 0
-        # Count all achievements in all games
         count = 0
         for game_id, achievements in self.coordinator.data[
             "RecentAchievements"
@@ -298,7 +278,6 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
             or "RecentAchievements" not in self.coordinator.data
         ):
             return {}
-        # Extract recent achievements
         recent_achievements = []
         for game_id, achievements in self.coordinator.data[
             "RecentAchievements"
@@ -322,7 +301,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
     """Representation of a RetroAchievements game sensor."""
 
     def __init__(self, coordinator, username, game_data):
-        """Initialize the sensor."""
         super().__init__(coordinator, username)
         self._game_data = game_data
         self._game_id = game_data.get("GameID")
@@ -349,7 +327,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         """Get achievement data for this game from coordinator data."""
         if not self.coordinator.data or "Awarded" not in self.coordinator.data:
             return {}
-        # Convert game ID to string as the API returns it as a string key in Awarded dict
         game_id_str = str(self._game_id)
         return self.coordinator.data.get("Awarded", {}).get(game_id_str, {})
 
@@ -370,7 +347,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         if not self._game_data:
             return {}
         achievement_data = self._get_achievement_data()
-        # Find game-specific achievements in the coordinator data
         game_achievements = []
         if (
             self.coordinator.data
@@ -391,7 +367,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
                         "image": f"https://retroachievements.org/Badge/{achievement.get('BadgeName')}.png",
                     }
                 )
-        # Build the attributes dictionary
         attrs = {
             ATTR_GAME_ID: self._game_id,
             ATTR_GAME_TITLE: self._game_title,
@@ -402,7 +377,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
             "image_boxart": f"https://retroachievements.org{self._game_data.get('ImageBoxArt', '')}",
             "game_url": f"https://retroachievements.org/game/{self._game_id}",
         }
-        # Add achievement data if available
         if achievement_data:
             attrs.update(
                 {
@@ -427,7 +401,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
                     ),
                 }
             )
-        # Add recent achievements for this game
         if game_achievements:
             attrs["achievements"] = game_achievements
         return attrs
@@ -449,7 +422,6 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
         self._game_title = game_data.get("Title")
         self._console_name = game_data.get("ConsoleName")
 
-        # Add debug logging to help troubleshoot
         from .const import LOGGER
 
         LOGGER.debug(
@@ -459,18 +431,13 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
             self._console_name,
         )
 
-        # Create unique_id based on username and game_id
         self._attr_unique_id = f"{DOMAIN}_{username}_recently_played_{self._game_id}"
 
-        # Name format: Title - ConsoleName
         self._attr_name = f"{self._game_title} - {self._console_name}"
         self._attr_icon = "mdi:gamepad-variant"
 
-        # Make sure we don't use translation_key if we're setting a specific name
         self._attr_has_entity_name = False
-        # self._attr_translation_key = "recently_played"  # Comment out as we're using a specific name
 
-        # Create a device for this recently played game linked to the user profile
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{username}_recently_played_{self._game_id}")},
             via_device=(DOMAIN, f"{username}"),  # Link to user device
@@ -482,12 +449,10 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
 
     @property
     def native_value(self):
-        """Return the name of the recently played game."""
         return f"{self._game_title} - {self._console_name}"
 
     @property
     def extra_state_attributes(self):
-        """Return the state attributes of the recently played game."""
         return {
             "game_id": self._game_id,
             "console_id": self._game_data.get("ConsoleID"),
