@@ -3,29 +3,29 @@
         "step": {
             "user": {
                 "title": "RetroAchievements",
-                "description": "Configure a integração RetroAchievements.",
+                "description": "Configure a integração do RetroAchievements.",
                 "data": {
                     "username": "Nome de usuário",
-                    "api_key": "Chave da API"
+                    "api_key": "Chave API"
                 }
             }
         },
         "error": {
-            "auth": "Nome de usuário ou chave da API inválidos.",
-            "connection": "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
-            "unknown": "Erro desconhecido ocorreu."
+            "auth": "Nome de usuário ou chave API inválido.",
+            "connection": "Falha ao conectar ao servidor. Verifique sua conexão com a internet.",
+            "unknown": "Ocorreu um erro desconhecido."
         },
         "abort": {
-            "already_configured": "Essa conta RetroAchievements já está configurada."
+            "already_configured": "Esta conta RetroAchievements já está configurada."
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "Opções RetroAchievements",
-                "description": "Configure opções para RetroAchievements.",
+                "title": "Opções do RetroAchievements",
+                "description": "Configure as opções para o RetroAchievements.",
                 "data": {
-                    "monitored_games": "IDs de jogos para monitorar (um ID por linha)"
+                    "monitored_games": "IDs dos jogos para monitorar (um ID por linha)"
                 }
             }
         }
@@ -33,19 +33,13 @@
     "entity": {
         "sensor": {
             "username": {
-                "name": "Nome de Usuário",
-                "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Membro desde",
-                    "profile_url": "URL do Perfil",
-                    "profile_pic": "Foto de Perfil"
-                }
+                "name": "Nome de usuário"
             },
             "total_points": {
                 "name": "Pontos Totais",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
@@ -54,7 +48,7 @@
                 "name": "Pontos Verdadeiros",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
@@ -63,16 +57,16 @@
                 "name": "Classificação",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
             },
             "currently_playing": {
-                "name": "Atualmente Jogando",
+                "name": "Jogando Atualmente",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
@@ -81,7 +75,7 @@
                 "name": "Status",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
@@ -90,16 +84,16 @@
                 "name": "Presença Rica",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
             },
             "recently_played_count": {
-                "name": "Quantidade de Jogos Recentes",
+                "name": "Contagem de Jogos Recentes",
                 "state_attributes": {
                     "id": "ID",
-                    "member_since": "Membro desde",
+                    "member_since": "Membro Desde",
                     "profile_url": "URL do Perfil",
                     "profile_pic": "Foto de Perfil"
                 }
@@ -111,7 +105,7 @@
                 }
             },
             "recently_played": {
-                "name": "Recentemente Jogado",
+                "name": "Jogados Recentemente",
                 "state_attributes": {
                     "game_id": "ID do Jogo",
                     "console_id": "ID do Console",
@@ -119,15 +113,15 @@
                     "title": "Título",
                     "image_icon": "Ícone do Jogo",
                     "image_title": "Imagem do Título",
-                    "image_ingame": "Imagem do Jogo",
+                    "image_ingame": "Imagem In-game",
                     "image_boxart": "Capa do Jogo",
-                    "last_played": "Último Jogado",
-                    "achievements_total": "Conquistas Totais",
+                    "last_played": "Jogado pela última vez",
+                    "achievements_total": "Total de Conquistas",
                     "game_url": "URL do Jogo"
                 }
             },
             "recently_played_game": {
-                "name": "Jogo Recentemente Jogado",
+                "name": "Jogo Recente",
                 "state_attributes": {
                     "game_id": "ID do Jogo",
                     "console_id": "ID do Console",
@@ -135,10 +129,10 @@
                     "title": "Título",
                     "image_icon": "Ícone do Jogo",
                     "image_title": "Imagem do Título",
-                    "image_ingame": "Imagem do Jogo",
+                    "image_ingame": "Imagem In-game",
                     "image_boxart": "Capa do Jogo",
-                    "last_played": "Último Jogado",
-                    "achievements_total": "Conquistas Totais",
+                    "last_played": "Jogado pela última vez",
+                    "achievements_total": "Total de Conquistas",
                     "game_url": "URL do Jogo"
                 }
             },
@@ -149,17 +143,17 @@
                     "game_title": "Título do Jogo",
                     "console_name": "Nome do Console",
                     "console_id": "ID do Console",
-                    "last_played": "Último Jogado",
+                    "last_played": "Jogado pela última vez",
                     "image_icon": "Ícone do Jogo",
                     "image_boxart": "Capa do Jogo",
                     "game_url": "URL do Jogo",
-                    "achievements_total": "Conquistas Totais",
+                    "achievements_total": "Total de Conquistas",
                     "achievements_earned": "Conquistas Obtidas",
                     "points_total": "Pontos Totais",
                     "points_earned": "Pontos Obtidos",
                     "hardcore_achievements_earned": "Conquistas Hardcore Obtidas",
                     "hardcore_points_earned": "Pontos Hardcore Obtidos",
-                    "completion_percentage": "Porcentagem de Conclusão",
+                    "completion_percentage": "Percentual de Conclusão",
                     "achievements": "Conquistas"
                 }
             }
