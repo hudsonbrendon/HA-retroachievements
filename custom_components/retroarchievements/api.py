@@ -140,7 +140,6 @@ class RetroAchievementsApiClient:
 
                 data = await response.json()
 
-                # The API might return success: false for some errors
                 if isinstance(data, dict) and data.get("Success") is False:
                     raise RetroAchievementsApiClientError(
                         data.get("Error", "Unknown error"),

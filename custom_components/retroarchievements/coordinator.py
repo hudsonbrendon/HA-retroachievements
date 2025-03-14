@@ -36,9 +36,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
     async def _async_update_data(self):
-        """Fetch data from RetroAchievements API."""
         try:
-            # Make multiple API calls concurrently
             user_summary, game_data = await asyncio.gather(
                 self.api_client.async_get_user_summary(), self._get_game_data()
             )
@@ -54,8 +52,6 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             raise
 
     async def _get_game_data(self):
-        """Fetch data for monitored games."""
-        # Get monitored games from options
         monitored_game_ids = set()
         if self.entry.options:
             game_ids_str = self.entry.options.get("monitored_games", "")
@@ -68,7 +64,6 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.monitored_games = monitored_game_ids
 
-        # Fetch game data for each monitored game
         game_data = {"Awarded": {}}
         if not monitored_game_ids:
             return game_data
