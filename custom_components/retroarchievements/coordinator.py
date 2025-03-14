@@ -1,21 +1,16 @@
-"""DataUpdateCoordinator for RetroAchievements."""
+"""Data update coordinator for the RetroAchievements integration."""
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
-from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .api import (
-    RetroAchievementsApiClient,
-    RetroAchievementsApiClientAuthenticationError,
-    RetroAchievementsApiClientError,
-)
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
+from .api import RetroAchievementsApiClient
+from .const import DOMAIN, LOGGER, UPDATE_INTERVAL
 
 
 class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
@@ -24,63 +19,73 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(
         self,
         hass: HomeAssistant,
-        config_entry: ConfigEntry,
-        client: RetroAchievementsApiClient,
+        api_client: RetroAchievementsApiClient,
+        entry: ConfigEntry,
+        update_interval: int = UPDATE_INTERVAL,
     ) -> None:
         """Initialize the coordinator."""
-        self.config_entry = config_entry
-        self.client = client
+        self.api_client = api_client
+        self.entry = entry
+        self.monitored_games = set()
+
         super().__init__(
             hass,
             LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(minutes=DEFAULT_SCAN_INTERVAL),
+            update_interval=timedelta(seconds=update_interval),
         )
 
-    async def _async_update_data(self) -> dict[str, Any]:
+    async def _async_update_data(self):
         """Fetch data from RetroAchievements API."""
         try:
-            # Use the stored client reference directly
-            client = self.client
+            # Make multiple API calls concurrently
+            user_summary, game_data = await asyncio.gather(
+                self.api_client.async_get_user_summary(), self._get_game_data()
+            )
 
-            # Get user summary data
-            user_summary = await client.async_get_user_summary()
-
-            # Get recent games
-            recent_games = await client.async_get_user_recent_games()
-
-            # Get monitored games data if any are configured
-            monitored_games_data = {}
-            monitored_game_ids = self.config_entry.options.get(
-                "monitored_games", ""
-            ).split("\n")
-            monitored_game_ids = [g.strip() for g in monitored_game_ids if g.strip()]
-
-            for game_id in monitored_game_ids:
-                try:
-                    game_id_int = int(game_id)
-                    game_info = await client.async_get_game_info(game_id_int)
-                    user_progress = await client.async_get_user_progress(game_id_int)
-
-                    monitored_games_data[game_id] = {
-                        "info": game_info,
-                        "progress": user_progress,
-                    }
-                except ValueError:
-                    LOGGER.warning(f"Invalid game ID: {game_id}")
-                except Exception as e:
-                    LOGGER.error(f"Error fetching data for game {game_id}: {e}")
-
-            # Combine all data
             return {
                 "user_summary": user_summary,
-                "recent_games": recent_games,
-                "monitored_games": monitored_games_data,
+                "recent_games": user_summary.get("RecentlyPlayed", []),
+                "RecentAchievements": user_summary.get("RecentAchievements", {}),
+                **game_data,
             }
+        except Exception as error:
+            LOGGER.error("Unexpected error fetching retroachievements data: %s", error)
+            raise
 
-        except RetroAchievementsApiClientAuthenticationError as exception:
-            raise ConfigEntryAuthFailed(exception) from exception
-        except RetroAchievementsApiClientError as exception:
-            raise UpdateFailed(
-                f"Error communicating with API: {exception}"
-            ) from exception
+    async def _get_game_data(self):
+        """Fetch data for monitored games."""
+        # Get monitored games from options
+        monitored_game_ids = set()
+        if self.entry.options:
+            game_ids_str = self.entry.options.get("monitored_games", "")
+            for game_id in game_ids_str.splitlines():
+                if game_id.strip():
+                    try:
+                        monitored_game_ids.add(int(game_id.strip()))
+                    except ValueError:
+                        LOGGER.warning("Invalid game ID: %s", game_id)
+
+        self.monitored_games = monitored_game_ids
+
+        # Fetch game data for each monitored game
+        game_data = {"Awarded": {}}
+        if not monitored_game_ids:
+            return game_data
+
+        tasks = []
+        for game_id in monitored_game_ids:
+            tasks.append(self.api_client.async_get_user_progress(game_id))
+
+        if tasks:
+            game_progresses = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for i, game_progress in enumerate(game_progresses):
+                if isinstance(game_progress, Exception):
+                    LOGGER.error("Error fetching game progress: %s", game_progress)
+                    continue
+
+                game_id = str(list(monitored_game_ids)[i])
+                game_data["Awarded"][game_id] = game_progress
+
+        return game_data

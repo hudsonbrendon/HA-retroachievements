@@ -43,15 +43,30 @@ class RetroAchievementsApiClient:
 
     async def async_get_user_summary(self) -> dict[str, Any]:
         """Get user summary from the API."""
-        return await self._api_wrapper(
+        response = await self._api_wrapper(
             endpoint="API_GetUserSummary.php",
             params={
                 "u": self._username,
-                "g": 5,  # Get 5 recent games (increased from 3)
+                "g": 10,  # Get more recent games (increased from 5)
                 "a": 5,  # Get 5 recent achievements
-                "y": self._api_key,  # API key is 'y' not 'a'
+                "y": self._api_key,
             },
         )
+
+        # Ensure we have a dictionary
+        if not isinstance(response, dict):
+            response = {}
+
+        # Add RecentlyPlayed if not present
+        if "RecentlyPlayed" not in response:
+            # Try to fetch recent games separately
+            try:
+                recent_games = await self.async_get_user_recent_games()
+                response["RecentlyPlayed"] = recent_games
+            except Exception:
+                response["RecentlyPlayed"] = []
+
+        return response
 
     async def async_get_user_recent_games(
         self, count: int = 10
@@ -65,6 +80,7 @@ class RetroAchievementsApiClient:
                 "y": self._api_key,
             },
         )
+
         # The API returns a list directly, not a dict with a "RecentlyPlayed" key
         return response if isinstance(response, list) else []
 

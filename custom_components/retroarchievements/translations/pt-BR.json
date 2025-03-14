@@ -42,27 +42,104 @@
                 }
             },
             "total_points": {
-                "name": "Pontos Totais"
+                "name": "Pontos Totais",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "true_points": {
-                "name": "Pontos Verdadeiros"
+                "name": "Pontos Verdadeiros",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "rank": {
-                "name": "Classificação"
+                "name": "Classificação",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
+            },
+            "currently_playing": {
+                "name": "Atualmente Jogando",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "status": {
-                "name": "Status"
+                "name": "Status",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "rich_presence": {
-                "name": "Presença Rica"
+                "name": "Presença Rica",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "recently_played_count": {
-                "name": "Quantidade de Jogos Recentes"
+                "name": "Quantidade de Jogos Recentes",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Membro desde",
+                    "profile_url": "URL do Perfil",
+                    "profile_pic": "Foto de Perfil"
+                }
             },
             "recent_achievements": {
                 "name": "Conquistas Recentes",
                 "state_attributes": {
                     "achievements": "Conquistas"
+                }
+            },
+            "recently_played": {
+                "name": "Recentemente Jogado",
+                "state_attributes": {
+                    "game_id": "ID do Jogo",
+                    "console_id": "ID do Console",
+                    "console_name": "Nome do Console",
+                    "title": "Título",
+                    "image_icon": "Ícone do Jogo",
+                    "image_title": "Imagem do Título",
+                    "image_ingame": "Imagem do Jogo",
+                    "image_boxart": "Capa do Jogo",
+                    "last_played": "Último Jogado",
+                    "achievements_total": "Conquistas Totais",
+                    "game_url": "URL do Jogo"
+                }
+            },
+            "recently_played_game": {
+                "name": "Jogo Recentemente Jogado",
+                "state_attributes": {
+                    "game_id": "ID do Jogo",
+                    "console_id": "ID do Console",
+                    "console_name": "Nome do Console",
+                    "title": "Título",
+                    "image_icon": "Ícone do Jogo",
+                    "image_title": "Imagem do Título",
+                    "image_ingame": "Imagem do Jogo",
+                    "image_boxart": "Capa do Jogo",
+                    "last_played": "Último Jogado",
+                    "achievements_total": "Conquistas Totais",
+                    "game_url": "URL do Jogo"
                 }
             },
             "game": {

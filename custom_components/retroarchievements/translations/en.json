@@ -62,6 +62,15 @@
                     "profile_pic": "Profile Picture"
                 }
             },
+            "currently_playing": {
+                "name": "Currently Playing",
+                "state_attributes": {
+                    "id": "ID",
+                    "member_since": "Member Since",
+                    "profile_url": "Profile URL",
+                    "profile_pic": "Profile Picture"
+                }
+            },
             "status": {
                 "name": "Status",
                 "state_attributes": {
@@ -95,7 +104,40 @@
                     "achievements": "Achievements"
                 }
             },
+            "recently_played": {
+                "name": "Recently Played",
+                "state_attributes": {
+                    "game_id": "Game ID",
+                    "console_id": "Console ID",
+                    "console_name": "Console Name",
+                    "title": "Title",
+                    "image_icon": "Icon Image",
+                    "image_title": "Title Image",
+                    "image_ingame": "In-game Image",
+                    "image_boxart": "Box Art Image",
+                    "last_played": "Last Played",
+                    "achievements_total": "Total Achievements",
+                    "game_url": "Game URL"
+                }
+            },
+            "recently_played_game": {
+                "name": "Recently Played Game",
+                "state_attributes": {
+                    "game_id": "Game ID",
+                    "console_id": "Console ID",
+                    "console_name": "Console Name",
+                    "title": "Title",
+                    "image_icon": "Icon Image",
+                    "image_title": "Title Image",
+                    "image_ingame": "In-game Image",
+                    "image_boxart": "Box Art Image",
+                    "last_played": "Last Played",
+                    "achievements_total": "Total Achievements",
+                    "game_url": "Game URL"
+                }
+            },
             "game": {
+                "name": "Game",
                 "state_attributes": {
                     "game_id": "Game ID",
                     "game_title": "Game Title",
