@@ -3,20 +3,21 @@
         "step": {
             "user": {
                 "title": "RetroAchievements",
-                "description": "Set up RetroAchievements integration.",
+                "description": "Set up RetroAchievements integration",
                 "data": {
                     "username": "Username",
-                    "api_key": "API Key"
+                    "api_key": "API Key",
+                    "scan_interval": "Scan interval (seconds)"
                 }
             }
         },
         "error": {
-            "auth": "Username or API key is invalid.",
-            "connection": "Failed to connect to the server. Check your internet connection.",
-            "unknown": "Unknown error occurred."
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
         },
         "abort": {
-            "already_configured": "This RetroAchievements account is already configured."
+            "already_configured": "Account is already configured"
         }
     },
     "options": {
@@ -38,123 +39,257 @@
             "total_points": {
                 "name": "Total Points",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "true_points": {
                 "name": "True Points",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "rank": {
                 "name": "Rank",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "currently_playing": {
                 "name": "Currently Playing",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "status": {
                 "name": "Status",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "rich_presence": {
                 "name": "Rich Presence",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "recently_played_count": {
                 "name": "Recently Played Games Count",
                 "state_attributes": {
-                    "id": "ID",
-                    "member_since": "Member Since",
-                    "profile_url": "Profile URL",
-                    "profile_pic": "Profile Picture"
+                    "id": {
+                        "name": "ID"
+                    },
+                    "member_since": {
+                        "name": "Member Since"
+                    },
+                    "profile_url": {
+                        "name": "Profile URL"
+                    },
+                    "profile_pic": {
+                        "name": "Profile Picture"
+                    }
                 }
             },
             "recent_achievements": {
                 "name": "Recent Achievements",
                 "state_attributes": {
-                    "achievements": "Achievements"
+                    "achievements": {
+                        "name": "Achievements"
+                    }
                 }
             },
             "recently_played": {
                 "name": "Recently Played",
                 "state_attributes": {
-                    "game_id": "Game ID",
-                    "console_id": "Console ID",
-                    "console_name": "Console Name",
-                    "title": "Title",
-                    "image_icon": "Icon Image",
-                    "image_title": "Title Image",
-                    "image_ingame": "In-game Image",
-                    "image_boxart": "Box Art Image",
-                    "last_played": "Last Played",
-                    "achievements_total": "Total Achievements",
-                    "game_url": "Game URL"
+                    "game_id": {
+                        "name": "Game ID"
+                    },
+                    "console_id": {
+                        "name": "Console ID"
+                    },
+                    "console_name": {
+                        "name": "Console Name"
+                    },
+                    "title": {
+                        "name": "Title"
+                    },
+                    "image_icon": {
+                        "name": "Icon Image"
+                    },
+                    "image_title": {
+                        "name": "Title Image"
+                    },
+                    "image_ingame": {
+                        "name": "In-game Image"
+                    },
+                    "image_boxart": {
+                        "name": "Box Art Image"
+                    },
+                    "last_played": {
+                        "name": "Last Played"
+                    },
+                    "achievements_total": {
+                        "name": "Total Achievements"
+                    },
+                    "game_url": {
+                        "name": "Game URL"
+                    }
                 }
             },
             "recently_played_game": {
                 "name": "Recently Played Game",
                 "state_attributes": {
-                    "game_id": "Game ID",
-                    "console_id": "Console ID",
-                    "console_name": "Console Name",
-                    "title": "Title",
-                    "image_icon": "Icon Image",
-                    "image_title": "Title Image",
-                    "image_ingame": "In-game Image",
-                    "image_boxart": "Box Art Image",
-                    "last_played": "Last Played",
-                    "achievements_total": "Total Achievements",
-                    "game_url": "Game URL"
+                    "game_id": {
+                        "name": "Game ID"
+                    },
+                    "console_id": {
+                        "name": "Console ID"
+                    },
+                    "console_name": {
+                        "name": "Console Name"
+                    },
+                    "title": {
+                        "name": "Title"
+                    },
+                    "image_icon": {
+                        "name": "Icon Image"
+                    },
+                    "image_title": {
+                        "name": "Title Image"
+                    },
+                    "image_ingame": {
+                        "name": "In-game Image"
+                    },
+                    "image_boxart": {
+                        "name": "Box Art Image"
+                    },
+                    "last_played": {
+                        "name": "Last Played"
+                    },
+                    "achievements_total": {
+                        "name": "Total Achievements"
+                    },
+                    "game_url": {
+                        "name": "Game URL"
+                    }
                 }
             },
             "game": {
                 "name": "Game",
                 "state_attributes": {
-                    "game_id": "Game ID",
-                    "game_title": "Game Title",
-                    "console_name": "Console Name",
-                    "console_id": "Console ID",
-                    "last_played": "Last Played",
-                    "image_icon": "Icon Image",
-                    "image_boxart": "Box Art Image",
-                    "game_url": "Game URL",
-                    "achievements_total": "Total Achievements",
-                    "achievements_earned": "Earned Achievements",
-                    "points_total": "Total Points",
-                    "points_earned": "Earned Points",
-                    "hardcore_achievements_earned": "Earned Hardcore Achievements",
-                    "hardcore_points_earned": "Earned Hardcore Points",
-                    "completion_percentage": "Completion Percentage",
-                    "achievements": "Achievements"
+                    "game_id": {
+                        "name": "Game ID"
+                    },
+                    "game_title": {
+                        "name": "Game Title"
+                    },
+                    "console_name": {
+                        "name": "Console Name"
+                    },
+                    "console_id": {
+                        "name": "Console ID"
+                    },
+                    "last_played": {
+                        "name": "Last Played"
+                    },
+                    "image_icon": {
+                        "name": "Icon Image"
+                    },
+                    "image_boxart": {
+                        "name": "Box Art Image"
+                    },
+                    "game_url": {
+                        "name": "Game URL"
+                    },
+                    "achievements_total": {
+                        "name": "Total Achievements"
+                    },
+                    "achievements_earned": {
+                        "name": "Earned Achievements"
+                    },
+                    "points_total": {
+                        "name": "Total Points"
+                    },
+                    "points_earned": {
+                        "name": "Earned Points"
+                    },
+                    "hardcore_achievements_earned": {
+                        "name": "Earned Hardcore Achievements"
+                    },
+                    "hardcore_points_earned": {
+                        "name": "Earned Hardcore Points"
+                    },
+                    "completion_percentage": {
+                        "name": "Completion Percentage"
+                    },
+                    "achievements": {
+                        "name": "Achievements"
+                    }
                 }
             }
         }
