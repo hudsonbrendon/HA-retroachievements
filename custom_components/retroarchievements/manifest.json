@@ -5,9 +5,11 @@
     "@hudsonbrendon"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/hudsonbrendon/ha-retroachievements",
+  "dependencies": [],
+  "documentation": "https://github.com/hudsonbrendon/HA-retroachievements",
+  "integration_type": "device",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/hudsonbrendon/ha-retroachievements/issues",
-  "version": "0.2.0",
-  "requirements": []
+  "issue_tracker": "https://github.com/hudsonbrendon/HA-retroachievements/issues",
+  "requirements": [],
+  "version": "0.2.0"
 }
