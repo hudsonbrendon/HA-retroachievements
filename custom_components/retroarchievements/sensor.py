@@ -53,6 +53,7 @@ USER_SENSORS = [
         icon="mdi:podium",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    # Currently playing sensor removed
     SensorEntityDescription(
         key="status",
         translation_key="status",
@@ -69,6 +70,12 @@ USER_SENSORS = [
         translation_key="recently_played_count",
         icon="mdi:controller",
         entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    # Add the recently_played sensor here as part of the user sensors
+    SensorEntityDescription(
+        key="recently_played",
+        translation_key="recently_played",
+        icon="mdi:history",
     ),
 ]
 
@@ -103,6 +110,20 @@ async def async_setup_entry(
                     username=username,
                 )
             )
+        # Create recently played games sensors
+        if "RecentlyPlayed" in user_data:
+            for game in user_data["RecentlyPlayed"]:
+                entities.append(
+                    RetroAchievementsRecentlyPlayedSensor(
+                        coordinator=coordinator,
+                        username=username,
+                        game_data=game,
+                    )
+                )
+
+            # Remove RecentlyPlayedGameSensor since we're now handling recently_played in USER_SENSORS
+            # The recently_played sensor will now be created with other user sensors
+
     # Create game sensors
     if coordinator.data and "recent_games" in coordinator.data:
         for game in coordinator.data["recent_games"]:
@@ -189,6 +210,12 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
             return data.get("RichPresenceMsg", "")
         if self._key == "recently_played_count":
             return len(self.coordinator.data.get("recent_games", []))
+        if self._key == "recently_played":
+            # Return the title of the most recently played game if available
+            if data.get("RecentlyPlayed") and len(data.get("RecentlyPlayed", [])) > 0:
+                recent_game = data["RecentlyPlayed"][0]
+                return f"{recent_game.get('Title')} - {recent_game.get('ConsoleName')}"
+            return "None"
         return None
 
     @property
@@ -197,7 +224,8 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         if not self.coordinator.data or "user_summary" not in self.coordinator.data:
             return {}
         data = self.coordinator.data["user_summary"]
-        # Only add attributes to username sensor
+
+        # Default user attributes
         if self._key == "username":
             return {
                 "id": data.get("ID"),
@@ -205,6 +233,28 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 "profile_url": f"https://retroachievements.org/user/{self.username}",
                 "profile_pic": f"https://retroachievements.org{data.get('UserPic', '')}",
             }
+
+        # Add special attributes for the recently_played sensor
+        if (
+            self._key == "recently_played"
+            and data.get("RecentlyPlayed")
+            and len(data.get("RecentlyPlayed", [])) > 0
+        ):
+            recent_game = data["RecentlyPlayed"][0]
+            return {
+                "game_id": recent_game.get("GameID"),
+                "console_id": recent_game.get("ConsoleID"),
+                "console_name": recent_game.get("ConsoleName"),
+                "title": recent_game.get("Title"),
+                "image_icon": f"https://retroachievements.org{recent_game.get('ImageIcon', '')}",
+                "image_title": f"https://retroachievements.org{recent_game.get('ImageTitle', '')}",
+                "image_ingame": f"https://retroachievements.org{recent_game.get('ImageIngame', '')}",
+                "image_boxart": f"https://retroachievements.org{recent_game.get('ImageBoxArt', '')}",
+                "last_played": recent_game.get("LastPlayed"),
+                "achievements_total": recent_game.get("AchievementsTotal", 0),
+                "game_url": f"https://retroachievements.org/game/{recent_game.get('GameID')}",
+            }
+
         return {}
 
 
@@ -232,7 +282,6 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
             or "RecentAchievements" not in self.coordinator.data
         ):
             return 0
-
         # Count all achievements in all games
         count = 0
         for game_id, achievements in self.coordinator.data[
@@ -249,7 +298,6 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
             or "RecentAchievements" not in self.coordinator.data
         ):
             return {}
-
         # Extract recent achievements
         recent_achievements = []
         for game_id, achievements in self.coordinator.data[
@@ -267,7 +315,6 @@ class RetroAchievementsRecentAchievementsSensor(RetroAchievementsBaseSensor):
                     "url": f"https://retroachievements.org/achievement/{achievement.get('ID')}",
                 }
                 recent_achievements.append(achievement_data)
-
         return {"achievements": recent_achievements}
 
 
@@ -302,7 +349,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         """Get achievement data for this game from coordinator data."""
         if not self.coordinator.data or "Awarded" not in self.coordinator.data:
             return {}
-
         # Convert game ID to string as the API returns it as a string key in Awarded dict
         game_id_str = str(self._game_id)
         return self.coordinator.data.get("Awarded", {}).get(game_id_str, {})
@@ -323,9 +369,7 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         """Return the state attributes."""
         if not self._game_data:
             return {}
-
         achievement_data = self._get_achievement_data()
-
         # Find game-specific achievements in the coordinator data
         game_achievements = []
         if (
@@ -347,7 +391,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
                         "image": f"https://retroachievements.org/Badge/{achievement.get('BadgeName')}.png",
                     }
                 )
-
         # Build the attributes dictionary
         attrs = {
             ATTR_GAME_ID: self._game_id,
@@ -359,7 +402,6 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
             "image_boxart": f"https://retroachievements.org{self._game_data.get('ImageBoxArt', '')}",
             "game_url": f"https://retroachievements.org/game/{self._game_id}",
         }
-
         # Add achievement data if available
         if achievement_data:
             attrs.update(
@@ -385,9 +427,77 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
                     ),
                 }
             )
-
         # Add recent achievements for this game
         if game_achievements:
             attrs["achievements"] = game_achievements
-
         return attrs
+
+
+class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
+    """Representation of a RetroAchievements recently played game sensor."""
+
+    def __init__(
+        self,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
+        game_data: dict,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, username)
+        self._game_data = game_data
+        self._game_id = game_data.get("GameID")
+        self._game_title = game_data.get("Title")
+        self._console_name = game_data.get("ConsoleName")
+
+        # Add debug logging to help troubleshoot
+        from .const import LOGGER
+
+        LOGGER.debug(
+            "Creating recently played sensor for game: %s (ID: %s, Console: %s)",
+            self._game_title,
+            self._game_id,
+            self._console_name,
+        )
+
+        # Create unique_id based on username and game_id
+        self._attr_unique_id = f"{DOMAIN}_{username}_recently_played_{self._game_id}"
+
+        # Name format: Title - ConsoleName
+        self._attr_name = f"{self._game_title} - {self._console_name}"
+        self._attr_icon = "mdi:gamepad-variant"
+
+        # Make sure we don't use translation_key if we're setting a specific name
+        self._attr_has_entity_name = False
+        # self._attr_translation_key = "recently_played"  # Comment out as we're using a specific name
+
+        # Create a device for this recently played game linked to the user profile
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, f"{username}_recently_played_{self._game_id}")},
+            via_device=(DOMAIN, f"{username}"),  # Link to user device
+            manufacturer="RetroAchievements",
+            name=f"{self._game_title} ({self._console_name})",
+            model="Recently Played Game",
+            configuration_url=f"https://retroachievements.org/game/{self._game_id}",
+        )
+
+    @property
+    def native_value(self):
+        """Return the name of the recently played game."""
+        return f"{self._game_title} - {self._console_name}"
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes of the recently played game."""
+        return {
+            "game_id": self._game_id,
+            "console_id": self._game_data.get("ConsoleID"),
+            "console_name": self._console_name,
+            "title": self._game_title,
+            "image_icon": f"https://retroachievements.org{self._game_data.get('ImageIcon', '')}",
+            "image_title": f"https://retroachievements.org{self._game_data.get('ImageTitle', '')}",
+            "image_ingame": f"https://retroachievements.org{self._game_data.get('ImageIngame', '')}",
+            "image_boxart": f"https://retroachievements.org{self._game_data.get('ImageBoxArt', '')}",
+            "last_played": self._game_data.get("LastPlayed"),
+            "achievements_total": self._game_data.get("AchievementsTotal", 0),
+            "game_url": f"https://retroachievements.org/game/{self._game_id}",
+        }
