@@ -104,6 +104,12 @@ async def async_setup_entry(
                     username=username,
                 )
             )
+        entities.append(
+            RetroAchievementsAOTWSensor(
+                coordinator=coordinator,
+                username=username,
+            )
+        )
         if "RecentlyPlayed" in user_data:
             for game in user_data["RecentlyPlayed"]:
                 entities.append(
@@ -465,4 +471,47 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
             "last_played": self._game_data.get("LastPlayed"),
             "achievements_total": self._game_data.get("AchievementsTotal", 0),
             "game_url": f"https://retroachievements.org/game/{self._game_id}",
+        }
+
+
+class RetroAchievementsAOTWSensor(RetroAchievementsBaseSensor):
+    """Representation of the Achievement of the Week sensor."""
+
+    def __init__(
+        self,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, username)
+        self._attr_unique_id = f"{DOMAIN}_{username}_aotw"
+        self._attr_translation_key = "aotw"
+        self._attr_has_entity_name = True
+        self._attr_icon = "mdi:calendar-star"
+
+    @property
+    def native_value(self):
+        """Return the AOTW title or None."""
+        aotw = (self.coordinator.data or {}).get("aotw") or {}
+        return (aotw.get("Achievement") or {}).get("Title")
+
+    @property
+    def extra_state_attributes(self):
+        """Return AOTW attributes."""
+        aotw = (self.coordinator.data or {}).get("aotw") or {}
+        ach = aotw.get("Achievement") or {}
+        game = aotw.get("Game") or {}
+        badge = ach.get("BadgeName")
+        return {
+            "achievement_id": ach.get("ID"),
+            "description": ach.get("Description"),
+            "points": ach.get("Points"),
+            "badge_url": (
+                f"https://retroachievements.org/Badge/{badge}.png" if badge else None
+            ),
+            "game_id": game.get("ID"),
+            "game_title": game.get("Title"),
+            "console_name": game.get("ConsoleName"),
+            "week_start": aotw.get("StartAt"),
+            "author": ach.get("Author"),
         }
