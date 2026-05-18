@@ -71,6 +71,45 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                     return achievements[ach_id], None
         return None, None
 
+    def _build_enriched_payload(
+        self, ach: dict, game_id: int, game_ext: dict
+    ) -> dict:
+        """Build the enriched event payload for an unlocked achievement."""
+        ach_id = ach.get("ID")
+        badge = ach.get("BadgeName")
+        game_ach = (game_ext.get("Achievements") or {}).get(str(ach_id), {}) or {}
+        num_players = game_ext.get("NumDistinctPlayers") or 0
+        rarity = None
+        rarity_hc = None
+        if num_players > 0:
+            num_awarded = game_ach.get("NumAwarded")
+            num_awarded_hc = game_ach.get("NumAwardedHardcore")
+            if num_awarded is not None:
+                rarity = round((num_awarded / num_players) * 100, 2)
+            if num_awarded_hc is not None:
+                rarity_hc = round((num_awarded_hc / num_players) * 100, 2)
+        return {
+            "achievement_id": ach_id,
+            "title": ach.get("Title"),
+            "description": ach.get("Description"),
+            "points": ach.get("Points"),
+            "true_points": game_ach.get("TrueRatio"),
+            "badge_url": (
+                f"https://retroachievements.org/Badge/{badge}.png" if badge else None
+            ),
+            "game_id": game_id,
+            "game_title": ach.get("GameTitle") or game_ext.get("Title"),
+            "console_name": ach.get("ConsoleName") or game_ext.get("ConsoleName"),
+            "console_id": game_ext.get("ConsoleID"),
+            "date_awarded": ach.get("DateAwarded"),
+            "hardcore": bool(ach.get("HardcoreMode") or ach.get("Hardcore")),
+            "rarity_pct": rarity,
+            "rarity_hardcore_pct": rarity_hc,
+            "display_order": game_ach.get("DisplayOrder"),
+            "author": game_ach.get("Author") or ach.get("Author"),
+            "username": self.api_client._username,
+        }
+
     async def _async_update_data(self):
         try:
             user_summary, game_data = await asyncio.gather(
