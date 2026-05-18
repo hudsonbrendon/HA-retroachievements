@@ -77,6 +77,7 @@ def test_build_enriched_payload_full(user_summary_fixture, game_extended_fixture
     )
 
     class _C:
+        username = "TestUser"
         _username = "TestUser"
 
     coord.api_client = _C()
@@ -107,6 +108,7 @@ def test_build_enriched_payload_handles_empty_game_ext():
     )
 
     class _C:
+        username = "TestUser"
         _username = "TestUser"
 
     coord.api_client = _C()
@@ -137,6 +139,7 @@ def test_build_enriched_payload_zero_players_returns_none_rarity():
     )
 
     class _C:
+        username = "TestUser"
         _username = "TestUser"
 
     coord.api_client = _C()

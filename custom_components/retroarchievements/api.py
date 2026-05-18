@@ -41,6 +41,11 @@ class RetroAchievementsApiClient:
         self._api_key = api_key
         self._session = session
 
+    @property
+    def username(self) -> str:
+        """Return the configured RetroAchievements username."""
+        return self._username
+
     async def async_get_user_summary(self) -> dict[str, Any]:
         """Get user summary from the API."""
         response = await self._api_wrapper(
