@@ -27,3 +27,14 @@ async def test_get_achievement_of_the_week_returns_payload(
         result = await client.async_get_achievement_of_the_week()
     assert result["Achievement"]["ID"] == 99999
     assert result["Game"]["Title"] == "Weekly Challenge Game"
+
+
+async def test_get_game_extended_returns_payload(session, game_extended_fixture):
+    url = re.compile(rf"^{re.escape(BASE_URL)}API_GetGameExtended\.php")
+    with aioresponses() as m:
+        m.get(url, payload=game_extended_fixture)
+        client = RetroAchievementsApiClient("TestUser", "key", session)
+        result = await client.async_get_game_extended(678)
+    assert result["NumDistinctPlayers"] == 1000
+    assert "12345" in result["Achievements"]
+    assert result["Achievements"]["12345"]["NumAwarded"] == 125
