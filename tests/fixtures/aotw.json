@@ -1,0 +1,18 @@
+{
+  "Achievement": {
+    "ID": 99999,
+    "Title": "Week Champion",
+    "Description": "Beat the weekly challenge",
+    "Points": 10,
+    "BadgeName": "99999",
+    "Author": "Devname"
+  },
+  "Game": {
+    "ID": 5555,
+    "Title": "Weekly Challenge Game",
+    "ConsoleName": "NES",
+    "ConsoleID": 7,
+    "ImageIcon": "/Images/weekly-icon.png"
+  },
+  "StartAt": "2026-05-12T00:00:00.000Z"
+}
