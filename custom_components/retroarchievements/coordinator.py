@@ -49,6 +49,28 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                     continue
         return ids
 
+    @staticmethod
+    def _find_achievement(
+        ach_id: int, user_summary: dict
+    ) -> tuple[dict | None, int | None]:
+        """Locate achievement payload and its game_id in RecentAchievements."""
+        for game_id, achievements in (
+            (user_summary or {}).get("RecentAchievements") or {}
+        ).items():
+            if not isinstance(achievements, dict):
+                continue
+            if str(ach_id) in achievements:
+                try:
+                    return achievements[str(ach_id)], int(game_id)
+                except (TypeError, ValueError):
+                    return achievements[str(ach_id)], None
+            if ach_id in achievements:
+                try:
+                    return achievements[ach_id], int(game_id)
+                except (TypeError, ValueError):
+                    return achievements[ach_id], None
+        return None, None
+
     async def _async_update_data(self):
         try:
             user_summary, game_data = await asyncio.gather(
