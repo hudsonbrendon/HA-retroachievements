@@ -1,0 +1,47 @@
+{
+  "ID": 12345,
+  "User": "TestUser",
+  "TotalPoints": 1500,
+  "TotalTruePoints": 2100,
+  "Rank": 5000,
+  "Status": "Online",
+  "RichPresenceMsg": "Playing Sonic the Hedgehog",
+  "UserPic": "/UserPic/TestUser.png",
+  "MemberSince": "2020-01-15 12:00:00",
+  "LastActivity": {
+    "ID": 1,
+    "timestamp": "2026-05-18 12:00:00",
+    "lastupdate": "2026-05-18 12:00:00"
+  },
+  "RecentAchievements": {
+    "678": {
+      "12345": {
+        "ID": 12345,
+        "GameID": 678,
+        "GameTitle": "Sonic the Hedgehog",
+        "ConsoleName": "Mega Drive",
+        "Title": "First Blood",
+        "Description": "Defeat your first enemy",
+        "Points": 5,
+        "BadgeName": "01234",
+        "DateAwarded": "2026-05-18 11:55:00",
+        "HardcoreMode": 1,
+        "Author": "Devname"
+      }
+    }
+  },
+  "RecentlyPlayed": [
+    {
+      "GameID": 678,
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "Title": "Sonic the Hedgehog",
+      "ImageIcon": "/Images/sonic-icon.png",
+      "ImageTitle": "/Images/sonic-title.png",
+      "ImageIngame": "/Images/sonic-ingame.png",
+      "ImageBoxArt": "/Images/sonic-box.png",
+      "LastPlayed": "2026-05-18 11:50:00",
+      "AchievementsTotal": 24
+    }
+  ]
+}
