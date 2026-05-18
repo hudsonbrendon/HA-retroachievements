@@ -35,6 +35,20 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=update_interval),
         )
 
+    @staticmethod
+    def _extract_achievement_ids(user_summary: dict) -> set[int]:
+        """Return set of achievement IDs across all games in RecentAchievements."""
+        ids: set[int] = set()
+        for _game_id, achievements in (
+            (user_summary or {}).get("RecentAchievements") or {}
+        ).items():
+            for ach_id in (achievements or {}).keys():
+                try:
+                    ids.add(int(ach_id))
+                except (TypeError, ValueError):
+                    continue
+        return ids
+
     async def _async_update_data(self):
         try:
             user_summary, game_data = await asyncio.gather(
