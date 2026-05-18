@@ -103,3 +103,35 @@ async def test_no_new_achievements_fires_no_events(
     await coord.async_refresh()  # same data, no diff
     await hass.async_block_till_done()
     assert fired == []
+
+
+async def test_aotw_change_fires_event(
+    hass, mock_api_client, mock_entry, aotw_fixture
+):
+    fired = []
+    hass.bus.async_listen(EVENT_AOTW_CHANGED, lambda e: fired.append(e))
+    coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
+    await coord.async_refresh()  # baseline AOTW = 99999
+    assert fired == []
+
+    new_aotw = {
+        **aotw_fixture,
+        "Achievement": {**aotw_fixture["Achievement"], "ID": 88888, "Title": "New"},
+    }
+    mock_api_client.async_get_achievement_of_the_week.return_value = new_aotw
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+
+    assert len(fired) == 1
+    assert fired[0].data["achievement_id"] == 88888
+    assert fired[0].data["title"] == "New"
+
+
+async def test_aotw_unchanged_fires_no_event(hass, mock_api_client, mock_entry):
+    fired = []
+    hass.bus.async_listen(EVENT_AOTW_CHANGED, lambda e: fired.append(e))
+    coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
+    await coord.async_refresh()
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert fired == []
