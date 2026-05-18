@@ -92,6 +92,14 @@ class RetroAchievementsApiClient:
         )
         return response if isinstance(response, dict) else {}
 
+    async def async_get_game_extended(self, game_id: int) -> dict[str, Any]:
+        """Get extended game metadata including per-achievement award counts."""
+        response = await self._api_wrapper(
+            endpoint="API_GetGameExtended.php",
+            params={"i": game_id, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
     async def async_get_game_info(self, game_id: int) -> dict[str, Any]:
         """Get information about a specific game."""
         return await self._api_wrapper(
