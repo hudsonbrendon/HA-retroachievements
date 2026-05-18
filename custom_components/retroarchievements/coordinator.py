@@ -107,7 +107,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             "rarity_hardcore_pct": rarity_hc,
             "display_order": game_ach.get("DisplayOrder"),
             "author": game_ach.get("Author") or ach.get("Author"),
-            "username": self.api_client._username,
+            "username": self.api_client.username,
         }
 
     async def _async_update_data(self):
