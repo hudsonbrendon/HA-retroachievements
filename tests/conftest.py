@@ -11,7 +11,10 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
 
 def load_fixture(name: str) -> dict | list:
-    """Load a JSON fixture from tests/fixtures/."""
+    """Load a JSON fixture from tests/fixtures/.
+
+    Each call re-reads the file, so tests may mutate the returned dict safely.
+    """
     return json.loads((FIXTURE_DIR / name).read_text())
 
 
@@ -36,6 +39,9 @@ def game_extended_fixture() -> dict:
 @pytest.fixture
 def mock_api_client(user_summary_fixture, aotw_fixture, game_extended_fixture):
     """Return an AsyncMock API client preloaded with fixture responses."""
+    # TODO(after-task-4): switch to AsyncMock(spec=RetroAchievementsApiClient)
+    #                     once async_get_achievement_of_the_week and
+    #                     async_get_game_extended exist on the class.
     client = AsyncMock()
     client._username = "TestUser"
     client.async_get_user_summary.return_value = user_summary_fixture
