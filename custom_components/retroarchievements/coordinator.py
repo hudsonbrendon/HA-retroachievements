@@ -126,7 +126,12 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         }
 
     async def _get_cached_game_extended(self, game_id: int) -> dict:
-        """Return cached GetGameExtended response for game_id, fetching once."""
+        """Return cached GetGameExtended response for game_id, fetching once.
+
+        Cached for the coordinator's lifetime — GetGameExtended metadata
+        (game title, console, achievement definitions) is immutable per game_id.
+        Cleared only on HA restart / integration reload.
+        """
         if game_id in self._game_extended_cache:
             return self._game_extended_cache[game_id]
         try:
@@ -149,7 +154,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.warning("Failed to fetch Achievement of the Week: %s", err)
             return {}
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> dict:
         try:
             user_summary, game_data, aotw = await asyncio.gather(
                 self.api_client.async_get_user_summary(),
@@ -163,9 +168,19 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             if not self._first_run:
                 new_ids = current_ids - self._previous_achievement_ids
                 for ach_id in new_ids:
-                    await self._fire_achievement_unlocked(ach_id, user_summary)
+                    try:
+                        await self._fire_achievement_unlocked(ach_id, user_summary)
+                    except Exception as fire_err:  # pylint: disable=broad-except
+                        LOGGER.warning(
+                            "Failed to fire achievement_unlocked for %s: %s",
+                            ach_id,
+                            fire_err,
+                        )
                 if aotw_id and aotw_id != self._previous_aotw_id:
-                    self._fire_aotw_changed(aotw)
+                    try:
+                        self._fire_aotw_changed(aotw)
+                    except Exception as fire_err:  # pylint: disable=broad-except
+                        LOGGER.warning("Failed to fire aotw_changed: %s", fire_err)
 
             self._previous_achievement_ids = current_ids
             self._previous_aotw_id = aotw_id
