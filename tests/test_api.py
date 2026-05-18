@@ -10,6 +10,9 @@ from aioresponses import aioresponses
 from custom_components.retroarchievements.api import RetroAchievementsApiClient
 from custom_components.retroarchievements.const import BASE_URL
 
+# aioresponses 0.7.x matches query strings strictly; we anchor a regex on the
+# endpoint path so the mock matches regardless of query params like ?y=key.
+
 
 @pytest.fixture
 async def session():
