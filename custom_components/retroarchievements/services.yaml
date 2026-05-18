@@ -1,0 +1,4 @@
+refresh:
+  name: Refresh data
+  description: Force an immediate refresh of all RetroAchievements data.
+  fields: {}
