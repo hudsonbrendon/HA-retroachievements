@@ -14,7 +14,14 @@ from .api import (
     RetroAchievementsApiClientCommunicationError,
     RetroAchievementsApiClientError,
 )
-from .const import CONF_API_KEY, CONF_MONITORED_GAMES, DOMAIN, LOGGER
+from .const import (
+    CONF_API_KEY,
+    CONF_GAMING_IDLE_THRESHOLD,
+    CONF_MONITORED_GAMES,
+    DEFAULT_GAMING_IDLE_THRESHOLD,
+    DOMAIN,
+    LOGGER,
+)
 
 
 class RetroAchievementsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -108,13 +115,19 @@ class RetroAchievementsOptionsFlowHandler(config_entries.OptionsFlow):
         options = {
             vol.Optional(
                 CONF_MONITORED_GAMES,
-                default=self.config_entry.options.get(CONF_MONITORED_GAMES, []),
+                default=self.config_entry.options.get(CONF_MONITORED_GAMES, ""),
             ): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.TEXT,
                     multiline=True,
                 ),
             ),
+            vol.Optional(
+                CONF_GAMING_IDLE_THRESHOLD,
+                default=self.config_entry.options.get(
+                    CONF_GAMING_IDLE_THRESHOLD, DEFAULT_GAMING_IDLE_THRESHOLD
+                ),
+            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=60)),
         }
 
         return self.async_show_form(

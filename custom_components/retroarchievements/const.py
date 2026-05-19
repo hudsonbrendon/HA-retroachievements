@@ -8,7 +8,7 @@ DOMAIN = "retroarchievements"
 LOGGER: Logger = getLogger(__package__)
 
 # Define platforms that this integration supports
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
 # API
 BASE_URL = "https://retroachievements.org/API/"
@@ -37,3 +37,14 @@ ATTR_RANK = "rank"
 
 # Attribution
 ATTRIBUTION = "Data provided by RetroAchievements"
+
+# Options
+CONF_GAMING_IDLE_THRESHOLD = "gaming_idle_threshold"
+DEFAULT_GAMING_IDLE_THRESHOLD = 5  # minutes
+
+# Services
+SERVICE_REFRESH = "refresh"
+
+# Events
+EVENT_ACHIEVEMENT_UNLOCKED = f"{DOMAIN}_achievement_unlocked"
+EVENT_AOTW_CHANGED = f"{DOMAIN}_aotw_changed"

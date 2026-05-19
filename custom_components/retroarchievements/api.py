@@ -41,6 +41,11 @@ class RetroAchievementsApiClient:
         self._api_key = api_key
         self._session = session
 
+    @property
+    def username(self) -> str:
+        """Return the configured RetroAchievements username."""
+        return self._username
+
     async def async_get_user_summary(self) -> dict[str, Any]:
         """Get user summary from the API."""
         response = await self._api_wrapper(
@@ -83,6 +88,22 @@ class RetroAchievementsApiClient:
 
         # The API returns a list directly, not a dict with a "RecentlyPlayed" key
         return response if isinstance(response, list) else []
+
+    async def async_get_achievement_of_the_week(self) -> dict[str, Any]:
+        """Get the current Achievement of the Week."""
+        response = await self._api_wrapper(
+            endpoint="API_GetAchievementOfTheWeek.php",
+            params={"y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_game_extended(self, game_id: int) -> dict[str, Any]:
+        """Get extended game metadata including per-achievement award counts."""
+        response = await self._api_wrapper(
+            endpoint="API_GetGameExtended.php",
+            params={"i": game_id, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
 
     async def async_get_game_info(self, game_id: int) -> dict[str, Any]:
         """Get information about a specific game."""
