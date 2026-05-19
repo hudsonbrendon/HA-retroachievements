@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -77,11 +77,11 @@ class RetroAchievementsIsGamingBinarySensor(CoordinatorEntity, BinarySensorEntit
             normalized = ts.replace("Z", "+00:00").replace(" ", "T")
             last = datetime.fromisoformat(normalized)
             if last.tzinfo is None:
-                last = last.replace(tzinfo=timezone.utc)
+                last = last.replace(tzinfo=UTC)
         except (ValueError, AttributeError):
             return False
-        threshold_seconds = self.coordinator._idle_threshold_minutes * 60
-        now = datetime.now(timezone.utc)
+        threshold_seconds = self.coordinator._idle_threshold_minutes * 60  # noqa: SLF001
+        now = datetime.now(UTC)
         return (now - last).total_seconds() <= threshold_seconds
 
 

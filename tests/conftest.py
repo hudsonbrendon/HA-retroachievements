@@ -11,7 +11,8 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures"
 
 
 def load_fixture(name: str) -> dict | list:
-    """Load a JSON fixture from tests/fixtures/.
+    """
+    Load a JSON fixture from tests/fixtures/.
 
     Each call re-reads the file, so tests may mutate the returned dict safely.
     """

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pytest
+from homeassistant.data_entry_flow import InvalidData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.retroarchievements.const import (
@@ -35,7 +36,7 @@ async def test_options_flow_accepts_idle_threshold(hass, mock_entry, enable_cust
 
 async def test_options_flow_rejects_threshold_too_high(hass, mock_entry, enable_custom_integrations):
     result = await hass.config_entries.options.async_init(mock_entry.entry_id)
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidData):
         await hass.config_entries.options.async_configure(
             result["flow_id"],
             user_input={"monitored_games": "", CONF_GAMING_IDLE_THRESHOLD: 999},
