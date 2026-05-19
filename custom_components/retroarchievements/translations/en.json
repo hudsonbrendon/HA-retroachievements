@@ -26,7 +26,8 @@
                 "title": "RetroAchievements Options",
                 "description": "Configure options for RetroAchievements.",
                 "data": {
-                    "monitored_games": "Game IDs to monitor (one ID per line)"
+                    "monitored_games": "Game IDs to monitor (one ID per line)",
+                    "gaming_idle_threshold": "Gaming idle threshold (minutes)"
                 }
             }
         }
@@ -291,6 +292,46 @@
                         "name": "Achievements"
                     }
                 }
+            },
+            "aotw": {
+                "name": "Achievement of the Week",
+                "state_attributes": {
+                    "achievement_id": {
+                        "name": "Achievement ID"
+                    },
+                    "description": {
+                        "name": "Description"
+                    },
+                    "points": {
+                        "name": "Points"
+                    },
+                    "badge_url": {
+                        "name": "Badge URL"
+                    },
+                    "game_id": {
+                        "name": "Game ID"
+                    },
+                    "game_title": {
+                        "name": "Game Title"
+                    },
+                    "console_name": {
+                        "name": "Console"
+                    },
+                    "week_start": {
+                        "name": "Week Start"
+                    },
+                    "author": {
+                        "name": "Author"
+                    }
+                }
+            }
+        },
+        "binary_sensor": {
+            "is_gaming": {
+                "name": "Is Gaming"
+            },
+            "aotw_unlocked": {
+                "name": "AOTW Unlocked"
             }
         }
     }

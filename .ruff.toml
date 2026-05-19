@@ -46,3 +46,15 @@ keep-runtime-typing = true
 
 [lint.mccabe]
 max-complexity = 25
+
+[lint.per-file-ignores]
+"tests/*" = [
+    "S101",   # asserts are expected in tests
+    "D100",   # docstring in public module
+    "D103",   # docstring in public function
+    "D104",   # docstring in public package
+    "SLF001", # private member access (legitimate in unit tests)
+    "ARG001", # unused arg (pytest fixtures injected by name)
+    "ANN",    # type annotations
+    "UP017",  # datetime.UTC alias (test files may use timezone.utc for clarity)
+]

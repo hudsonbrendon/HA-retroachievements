@@ -107,6 +107,92 @@ All game sensors are grouped under your RetroAchievements user device for easy o
 - Track completion percentages across your game collection
 - Display recently unlocked achievements in your dashboard
 
+## Achievement of the Week (AOTW)
+
+| Entity | Description |
+|--------|-------------|
+| `sensor.retroachievements_USERNAME_aotw` | Title of the current AOTW (attributes: id, points, game, console, badge, week start, author) |
+| `binary_sensor.retroachievements_USERNAME_aotw_unlocked` | `on` if the user already unlocked the current AOTW |
+
+> **Limitation:** `aotw_unlocked` may briefly read `off` for unlocks that happened well before the integration was restarted, until the next detection cycle observes the achievement again.
+
+## Is Gaming
+
+| Entity | Description |
+|--------|-------------|
+| `binary_sensor.retroachievements_USERNAME_is_gaming` | `on` when the user has rich presence, is Online, and has recent activity (within the configured idle threshold) |
+
+## Events
+
+The integration fires HA bus events you can use as automation triggers.
+
+### `retroarchievements_achievement_unlocked`
+
+Fired once for each newly unlocked achievement (skipped on the very first refresh after restart).
+
+Payload fields:
+
+```yaml
+achievement_id: int
+title: str
+description: str
+points: int
+true_points: int | null
+badge_url: str | null
+game_id: int
+game_title: str
+console_name: str
+console_id: int | null
+date_awarded: str
+hardcore: bool
+rarity_pct: float | null         # % of game players that unlocked this
+rarity_hardcore_pct: float | null
+display_order: int | null
+author: str | null
+username: str
+```
+
+Example automation — TTS announcement for rare achievements:
+
+```yaml
+automation:
+  - alias: Announce rare RetroAchievements unlock
+    trigger:
+      platform: event
+      event_type: retroarchievements_achievement_unlocked
+    condition:
+      - condition: template
+        value_template: "{{ trigger.event.data.rarity_pct is not none and trigger.event.data.rarity_pct < 5 }}"
+    action:
+      service: tts.cloud_say
+      data:
+        entity_id: media_player.living_room
+        message: >
+          Rare achievement unlocked: {{ trigger.event.data.title }}
+          in {{ trigger.event.data.game_title }}.
+```
+
+### `retroarchievements_aotw_changed`
+
+Fired when the current Achievement of the Week changes ID.
+
+Payload fields: `achievement_id`, `title`, `description`, `points`, `badge_url`, `game_id`, `game_title`, `console_name`, `week_start`, `author`.
+
+## Service: `retroarchievements.refresh`
+
+Forces an immediate refresh of all RetroAchievements data (useful right after unlocking an achievement in your emulator).
+
+```yaml
+service: retroarchievements.refresh
+```
+
+## Options
+
+In **Settings → Devices & Services → RetroAchievements → Configure**:
+
+- `monitored_games` — game IDs to track in detail (one per line).
+- `gaming_idle_threshold` — minutes of inactivity after which `is_gaming` flips off (default `5`, range `1`–`60`).
+
 ## Troubleshooting
 
 If you encounter issues, please:
