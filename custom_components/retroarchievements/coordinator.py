@@ -57,7 +57,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         for _game_id, achievements in (
             (user_summary or {}).get("RecentAchievements") or {}
         ).items():
-            for ach_id in (achievements or {}).keys():
+            for ach_id in achievements or {}:
                 try:
                     ids.add(int(ach_id))
                 except (TypeError, ValueError):
@@ -126,7 +126,8 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         }
 
     async def _get_cached_game_extended(self, game_id: int) -> dict:
-        """Return cached GetGameExtended response for game_id, fetching once.
+        """
+        Return cached GetGameExtended response for game_id, fetching once.
 
         Cached for the coordinator's lifetime — GetGameExtended metadata
         (game title, console, achievement definitions) is immutable per game_id.
