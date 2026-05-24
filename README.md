@@ -45,6 +45,28 @@ The integration provides the following entities:
 | `sensor.retroachievements_USERNAME_achievements_unlocked` | Number of achievements unlocked | Same as above |
 | `sensor.retroachievements_USERNAME_recent_achievements` | Count of recently unlocked achievements | List of recently unlocked achievements with details |
 
+### Player Stats Sensors
+
+Sourced from the RetroAchievements `GetUserPoints`, `GetUserCompletionProgress`, and `GetUserAwards` endpoints.
+
+| Sensor | Description |
+|--------|-------------|
+| `sensor.retroachievements_USERNAME_hardcore_points` | Hardcore points total |
+| `sensor.retroachievements_USERNAME_softcore_points` | Softcore points total |
+| `sensor.retroachievements_USERNAME_games_mastered` | Number of games mastered |
+| `sensor.retroachievements_USERNAME_games_beaten` | Number of games beaten (hardcore + softcore) |
+| `sensor.retroachievements_USERNAME_games_played` | Number of games played |
+| `sensor.retroachievements_USERNAME_awards_total` | Total site awards earned |
+
+### Image, Todo & Button Entities
+
+| Entity | Description |
+|--------|-------------|
+| `image.retroachievements_USERNAME_current_game_box_art` | Box art of the most recently played game |
+| `image.retroachievements_USERNAME_last_achievement_badge` | Badge of the most recently earned achievement |
+| `todo.retroachievements_USERNAME_want_to_play` | Read-only backlog mirroring your RetroAchievements "Want to Play" list |
+| `button.retroachievements_USERNAME_refresh` | Forces an immediate data refresh |
+
 ### Game-specific Sensors
 
 For each recently played game, the integration creates:
@@ -178,6 +200,16 @@ Fired when the current Achievement of the Week changes ID.
 
 Payload fields: `achievement_id`, `title`, `description`, `points`, `badge_url`, `game_id`, `game_title`, `console_name`, `week_start`, `author`.
 
+### `retroarchievements_award_earned`
+
+Fired when a new site award (mastery, completion, beaten) appears on your profile.
+
+Payload fields: `award_type`, `game_id`, `title`, `console_name`, `console_id`, `awarded_at`, `hardcore`, `image_url`, `username`.
+
+## Automation Blueprint
+
+A ready-made blueprint lives in `blueprints/automation/retroarchievements/achievement_unlocked_notify.yaml`. Import it to get a notification (with the badge image) on every unlocked achievement, with an optional "hardcore only" filter.
+
 ## Service: `retroarchievements.refresh`
 
 Forces an immediate refresh of all RetroAchievements data (useful right after unlocking an achievement in your emulator).
@@ -192,6 +224,11 @@ In **Settings → Devices & Services → RetroAchievements → Configure**:
 
 - `monitored_games` — game IDs to track in detail (one per line).
 - `gaming_idle_threshold` — minutes of inactivity after which `is_gaming` flips off (default `5`, range `1`–`60`).
+
+## Re-authentication & Diagnostics
+
+- If your API key is rotated or rejected, Home Assistant prompts a **Re-authenticate** flow to enter a new key without removing the integration.
+- **Download diagnostics** from the device page to get a redacted dump (API key removed) of the config entry and coordinator data for bug reports.
 
 ## Troubleshooting
 

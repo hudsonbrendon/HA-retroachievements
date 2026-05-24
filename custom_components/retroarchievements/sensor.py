@@ -27,6 +27,17 @@ from .const import (
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
+_STAT_KEYS = frozenset(
+    {
+        "hardcore_points",
+        "softcore_points",
+        "games_mastered",
+        "games_beaten",
+        "games_played",
+        "awards_total",
+    }
+)
+
 USER_SENSORS = [
     SensorEntityDescription(
         key="username",
@@ -73,6 +84,42 @@ USER_SENSORS = [
         key="recently_played",
         translation_key="recently_played",
         icon="mdi:history",
+    ),
+    SensorEntityDescription(
+        key="hardcore_points",
+        translation_key="hardcore_points",
+        icon="mdi:trophy",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="softcore_points",
+        translation_key="softcore_points",
+        icon="mdi:trophy-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_mastered",
+        translation_key="games_mastered",
+        icon="mdi:medal",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_beaten",
+        translation_key="games_beaten",
+        icon="mdi:flag-checkered",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_played",
+        translation_key="games_played",
+        icon="mdi:gamepad-square",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="awards_total",
+        translation_key="awards_total",
+        icon="mdi:medal-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 ]
 
@@ -203,7 +250,26 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 recent_game = data["RecentlyPlayed"][0]
                 return f"{recent_game.get('Title')} - {recent_game.get('ConsoleName')}"
             return "None"
+        if self._key in _STAT_KEYS:
+            return self._stat_value()
         return None
+
+    def _stat_value(self):
+        """Return a value for stat keys sourced from top-level coordinator data."""
+        points = self.coordinator.data.get("user_points") or {}
+        awards = self.coordinator.data.get("awards") or {}
+        progress = self.coordinator.data.get("completion_progress") or {}
+        return {
+            "hardcore_points": points.get("Points", 0),
+            "softcore_points": points.get("SoftcorePoints", 0),
+            "games_mastered": awards.get("MasteryAwardsCount", 0),
+            "games_beaten": (
+                awards.get("BeatenHardcoreAwardsCount", 0)
+                + awards.get("BeatenSoftcoreAwardsCount", 0)
+            ),
+            "games_played": progress.get("Total", 0),
+            "awards_total": awards.get("TotalAwardsCount", 0),
+        }[self._key]
 
     @property
     def extra_state_attributes(self):
