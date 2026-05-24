@@ -38,7 +38,39 @@ def game_extended_fixture() -> dict:
 
 
 @pytest.fixture
-def mock_api_client(user_summary_fixture, aotw_fixture, game_extended_fixture):
+def user_points_fixture() -> dict:
+    """Return the sample GetUserPoints payload."""
+    return load_fixture("user_points.json")
+
+
+@pytest.fixture
+def completion_progress_fixture() -> dict:
+    """Return the sample GetUserCompletionProgress payload."""
+    return load_fixture("completion_progress.json")
+
+
+@pytest.fixture
+def user_awards_fixture() -> dict:
+    """Return the sample GetUserAwards payload."""
+    return load_fixture("user_awards.json")
+
+
+@pytest.fixture
+def want_to_play_fixture() -> dict:
+    """Return the sample GetUserWantToPlayList payload."""
+    return load_fixture("want_to_play.json")
+
+
+@pytest.fixture
+def mock_api_client(
+    user_summary_fixture,
+    aotw_fixture,
+    game_extended_fixture,
+    user_points_fixture,
+    completion_progress_fixture,
+    user_awards_fixture,
+    want_to_play_fixture,
+):
     """Return an AsyncMock API client preloaded with fixture responses."""
     # Local import to keep the heavy HA import out of fixture-discovery time
     from custom_components.retroarchievements.api import RetroAchievementsApiClient
@@ -53,4 +85,10 @@ def mock_api_client(user_summary_fixture, aotw_fixture, game_extended_fixture):
     client.async_get_achievement_of_the_week.return_value = aotw_fixture
     client.async_get_game_extended.return_value = game_extended_fixture
     client.async_get_user_progress.return_value = {}
+    client.async_get_user_points.return_value = user_points_fixture
+    client.async_get_user_completion_progress.return_value = (
+        completion_progress_fixture
+    )
+    client.async_get_user_awards.return_value = user_awards_fixture
+    client.async_get_user_want_to_play_list.return_value = want_to_play_fixture
     return client

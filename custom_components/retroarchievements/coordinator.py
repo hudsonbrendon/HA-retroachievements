@@ -16,6 +16,7 @@ from .const import (
     DOMAIN,
     EVENT_ACHIEVEMENT_UNLOCKED,
     EVENT_AOTW_CHANGED,
+    EVENT_AWARD_EARNED,
     LOGGER,
     UPDATE_INTERVAL,
 )
@@ -37,6 +38,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         self.monitored_games: set[int] = set()
         self._previous_achievement_ids: set[int] = set()
         self._previous_aotw_id: int | None = None
+        self._previous_award_keys: set[str] = set()
         self._game_extended_cache: dict[int, dict] = {}
         self._first_run: bool = True
         self._idle_threshold_minutes: int = (entry.options or {}).get(
@@ -155,16 +157,91 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.warning("Failed to fetch Achievement of the Week: %s", err)
             return {}
 
+    async def _safe_get(self, coro_factory, label: str) -> dict:
+        """Await coro_factory(); return {} on error so refresh continues."""
+        try:
+            data = await coro_factory()
+            return data if isinstance(data, dict) else {}
+        except Exception as err:  # pylint: disable=broad-except
+            LOGGER.warning("Failed to fetch %s: %s", label, err)
+            return {}
+
+    @staticmethod
+    def _extract_award_keys(awards: dict) -> set[str]:
+        """Build a set of stable keys for the user's visible awards."""
+        keys: set[str] = set()
+        for award in (awards or {}).get("VisibleUserAwards") or []:
+            if not isinstance(award, dict):
+                continue
+            keys.add(
+                f"{award.get('AwardType')}:{award.get('AwardData')}:"
+                f"{award.get('AwardDataExtra')}"
+            )
+        return keys
+
+    @staticmethod
+    def _find_award(award_key: str, awards: dict) -> dict | None:
+        """Locate the award payload matching award_key."""
+        for award in (awards or {}).get("VisibleUserAwards") or []:
+            if not isinstance(award, dict):
+                continue
+            key = (
+                f"{award.get('AwardType')}:{award.get('AwardData')}:"
+                f"{award.get('AwardDataExtra')}"
+            )
+            if key == award_key:
+                return award
+        return None
+
+    def _fire_award_earned(self, award: dict) -> None:
+        """Fire the award_earned event for a newly earned award."""
+        icon = award.get("ImageIcon")
+        self.hass.bus.async_fire(
+            EVENT_AWARD_EARNED,
+            {
+                "award_type": award.get("AwardType"),
+                "game_id": award.get("AwardData"),
+                "title": award.get("Title"),
+                "console_name": award.get("ConsoleName"),
+                "console_id": award.get("ConsoleID"),
+                "awarded_at": award.get("AwardedAt"),
+                "hardcore": award.get("AwardDataExtra") == 1,
+                "image_url": (
+                    f"https://retroachievements.org{icon}" if icon else None
+                ),
+                "username": self.api_client.username,
+            },
+        )
+
     async def _async_update_data(self) -> dict:
         try:
-            user_summary, game_data, aotw = await asyncio.gather(
+            (
+                user_summary,
+                game_data,
+                aotw,
+                user_points,
+                completion_progress,
+                awards,
+                want_to_play,
+            ) = await asyncio.gather(
                 self.api_client.async_get_user_summary(),
                 self._get_game_data(),
                 self._safe_get_aotw(),
+                self._safe_get(self.api_client.async_get_user_points, "user points"),
+                self._safe_get(
+                    self.api_client.async_get_user_completion_progress,
+                    "completion progress",
+                ),
+                self._safe_get(self.api_client.async_get_user_awards, "user awards"),
+                self._safe_get(
+                    self.api_client.async_get_user_want_to_play_list,
+                    "want to play list",
+                ),
             )
 
             current_ids = self._extract_achievement_ids(user_summary)
             aotw_id = ((aotw or {}).get("Achievement") or {}).get("ID")
+            current_award_keys = self._extract_award_keys(awards)
 
             if not self._first_run:
                 new_ids = current_ids - self._previous_achievement_ids
@@ -182,9 +259,18 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                         self._fire_aotw_changed(aotw)
                     except Exception as fire_err:  # pylint: disable=broad-except
                         LOGGER.warning("Failed to fire aotw_changed: %s", fire_err)
+                for award_key in current_award_keys - self._previous_award_keys:
+                    award = self._find_award(award_key, awards)
+                    if award is None:
+                        continue
+                    try:
+                        self._fire_award_earned(award)
+                    except Exception as fire_err:  # pylint: disable=broad-except
+                        LOGGER.warning("Failed to fire award_earned: %s", fire_err)
 
             self._previous_achievement_ids = current_ids
             self._previous_aotw_id = aotw_id
+            self._previous_award_keys = current_award_keys
             self._first_run = False
 
             return {
@@ -192,6 +278,10 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 "recent_games": user_summary.get("RecentlyPlayed", []),
                 "RecentAchievements": user_summary.get("RecentAchievements", {}),
                 "aotw": aotw or {},
+                "user_points": user_points,
+                "completion_progress": completion_progress,
+                "awards": awards,
+                "want_to_play": want_to_play,
                 **game_data,
             }
         except Exception as error:

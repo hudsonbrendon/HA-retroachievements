@@ -1,0 +1,45 @@
+{
+  "Count": 3,
+  "Total": 3,
+  "Results": [
+    {
+      "GameID": 678,
+      "Title": "Sonic the Hedgehog",
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "ImageIcon": "/Images/sonic-icon.png",
+      "MaxPossible": 24,
+      "NumAwarded": 24,
+      "NumAwardedHardcore": 24,
+      "MostRecentAwardedDate": "2026-05-18T11:55:00.000Z",
+      "HighestAwardKind": "mastered",
+      "HighestAwardDate": "2026-05-18T11:55:00.000Z"
+    },
+    {
+      "GameID": 700,
+      "Title": "Streets of Rage",
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "ImageIcon": "/Images/sor-icon.png",
+      "MaxPossible": 30,
+      "NumAwarded": 15,
+      "NumAwardedHardcore": 15,
+      "MostRecentAwardedDate": "2026-05-10T10:00:00.000Z",
+      "HighestAwardKind": "beaten-hardcore",
+      "HighestAwardDate": "2026-05-10T10:00:00.000Z"
+    },
+    {
+      "GameID": 800,
+      "Title": "Aladdin",
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "ImageIcon": "/Images/aladdin-icon.png",
+      "MaxPossible": 20,
+      "NumAwarded": 20,
+      "NumAwardedHardcore": 0,
+      "MostRecentAwardedDate": "2026-05-01T10:00:00.000Z",
+      "HighestAwardKind": "completed",
+      "HighestAwardDate": "2026-05-01T10:00:00.000Z"
+    }
+  ]
+}
