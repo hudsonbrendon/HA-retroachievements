@@ -23,9 +23,7 @@ async def async_setup_entry(
     coordinator: RetroAchievementsDataUpdateCoordinator = hass.data[DOMAIN][
         entry.entry_id
     ]["coordinator"]
-    async_add_entities(
-        [RetroAchievementsWantToPlayTodoList(coordinator, username)]
-    )
+    async_add_entities([RetroAchievementsWantToPlayTodoList(coordinator, username)])
 
 
 class RetroAchievementsWantToPlayTodoList(CoordinatorEntity, TodoListEntity):

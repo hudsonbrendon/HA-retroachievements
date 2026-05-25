@@ -88,9 +88,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                     return achievements[ach_id], None
         return None, None
 
-    def _build_enriched_payload(
-        self, ach: dict, game_id: int, game_ext: dict
-    ) -> dict:
+    def _build_enriched_payload(self, ach: dict, game_id: int, game_ext: dict) -> dict:
         """Build the enriched event payload for an unlocked achievement."""
         ach_id = ach.get("ID")
         badge = ach.get("BadgeName")
@@ -206,9 +204,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 "console_id": award.get("ConsoleID"),
                 "awarded_at": award.get("AwardedAt"),
                 "hardcore": award.get("AwardDataExtra") == 1,
-                "image_url": (
-                    f"https://retroachievements.org{icon}" if icon else None
-                ),
+                "image_url": (f"https://retroachievements.org{icon}" if icon else None),
                 "username": self.api_client.username,
             },
         )
@@ -288,9 +284,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.error("Unexpected error fetching retroachievements data: %s", error)
             raise
 
-    async def _fire_achievement_unlocked(
-        self, ach_id: int, user_summary: dict
-    ) -> None:
+    async def _fire_achievement_unlocked(self, ach_id: int, user_summary: dict) -> None:
         """Look up, enrich, and fire the achievement_unlocked event."""
         ach, game_id = self._find_achievement(ach_id, user_summary)
         if ach is None or game_id is None:
@@ -332,7 +326,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
         """Return True if the user already unlocked the current AOTW."""
         if not self.data:
             return False
-        aotw = (self.data.get("aotw") or {})
+        aotw = self.data.get("aotw") or {}
         ach_id = (aotw.get("Achievement") or {}).get("ID")
         if not ach_id:
             return False
@@ -342,9 +336,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             return False
         if ach_id_int in self._previous_achievement_ids:
             return True
-        recent = (self.data.get("user_summary") or {}).get(
-            "RecentAchievements"
-        ) or {}
+        recent = (self.data.get("user_summary") or {}).get("RecentAchievements") or {}
         for _game_id, achievements in recent.items():
             if not isinstance(achievements, dict):
                 continue

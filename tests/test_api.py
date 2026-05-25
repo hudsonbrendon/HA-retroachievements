@@ -1,4 +1,5 @@
 """Tests for the RetroAchievements API client."""
+
 from __future__ import annotations
 
 import re
@@ -20,9 +21,7 @@ async def session():
         yield s
 
 
-async def test_get_achievement_of_the_week_returns_payload(
-    session, aotw_fixture
-):
+async def test_get_achievement_of_the_week_returns_payload(session, aotw_fixture):
     url = re.compile(rf"^{re.escape(BASE_URL)}API_GetAchievementOfTheWeek\.php")
     with aioresponses() as m:
         m.get(url, payload=aotw_fixture)

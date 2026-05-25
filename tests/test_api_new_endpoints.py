@@ -1,4 +1,5 @@
 """Tests for the RetroAchievements API client's expanded endpoints."""
+
 from __future__ import annotations
 
 import re
