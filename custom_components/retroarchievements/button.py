@@ -13,6 +13,8 @@ from .const import CONF_USERNAME, DOMAIN
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 from .entity import user_device_info
 
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -21,9 +23,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the refresh button based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    coordinator: RetroAchievementsDataUpdateCoordinator = hass.data[DOMAIN][
-        entry.entry_id
-    ]["coordinator"]
+    coordinator: RetroAchievementsDataUpdateCoordinator = entry.runtime_data
     async_add_entities([RetroAchievementsRefreshButton(coordinator, username)])
 
 

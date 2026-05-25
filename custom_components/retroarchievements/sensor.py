@@ -5,6 +5,7 @@ from __future__ import annotations
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -28,6 +29,9 @@ from .const import (
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
+# Coordinator already fetches everything; entity reads are local. No throttling.
+PARALLEL_UPDATES = 0
+
 _STAT_KEYS = frozenset(
     {
         "hardcore_points",
@@ -36,6 +40,17 @@ _STAT_KEYS = frozenset(
         "games_beaten",
         "games_played",
         "awards_total",
+    }
+)
+
+_SOCIAL_KEYS = frozenset(
+    {
+        "following_count",
+        "followers_count",
+        "set_requests",
+        "achievements_earned_today",
+        "recent_game_awards",
+        "top_ten",
     }
 )
 
@@ -49,18 +64,23 @@ USER_SENSORS = [
         key="total_points",
         translation_key="total_points",
         icon="mdi:trophy",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="true_points",
         translation_key="true_points",
         icon="mdi:trophy-award",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="rank",
         translation_key="rank",
         icon="mdi:podium",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # Currently playing sensor removed
@@ -79,6 +99,7 @@ USER_SENSORS = [
         key="recently_played_count",
         translation_key="recently_played_count",
         icon="mdi:controller",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
@@ -90,36 +111,85 @@ USER_SENSORS = [
         key="hardcore_points",
         translation_key="hardcore_points",
         icon="mdi:trophy",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="softcore_points",
         translation_key="softcore_points",
         icon="mdi:trophy-outline",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_mastered",
         translation_key="games_mastered",
         icon="mdi:medal",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_beaten",
         translation_key="games_beaten",
         icon="mdi:flag-checkered",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_played",
         translation_key="games_played",
         icon="mdi:gamepad-square",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="awards_total",
         translation_key="awards_total",
         icon="mdi:medal-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="following_count",
+        translation_key="following_count",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="followers_count",
+        translation_key="followers_count",
+        icon="mdi:account-multiple-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="set_requests",
+        translation_key="set_requests",
+        icon="mdi:playlist-plus",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="achievements_earned_today",
+        translation_key="achievements_earned_today",
+        icon="mdi:calendar-today",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="recent_game_awards",
+        translation_key="recent_game_awards",
+        icon="mdi:medal",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="top_ten",
+        translation_key="top_ten",
+        icon="mdi:trophy-variant",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
 ]
@@ -132,7 +202,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up RetroAchievements sensors based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = entry.runtime_data
 
     entities = []
     if coordinator.data and "user_summary" in coordinator.data:
@@ -253,6 +323,31 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
             return "None"
         if self._key in _STAT_KEYS:
             return self._stat_value()
+        if self._key in _SOCIAL_KEYS:
+            return self._social_value()
+        return None
+
+    def _social_value(self):
+        """Return a value for social keys sourced from top-level coordinator data."""
+        data = self.coordinator.data
+        following = data.get("following") or {}
+        followers = data.get("followers") or {}
+        set_requests = data.get("set_requests") or {}
+        earned_on_day = data.get("earned_on_day") or []
+        recent_game_awards = data.get("recent_game_awards") or {}
+        top_ten = data.get("top_ten") or []
+        if self._key == "following_count":
+            return following.get("Total", 0)
+        if self._key == "followers_count":
+            return followers.get("Total", 0)
+        if self._key == "set_requests":
+            return set_requests.get("TotalRequests", 0)
+        if self._key == "achievements_earned_today":
+            return len(earned_on_day)
+        if self._key == "recent_game_awards":
+            return recent_game_awards.get("Total", 0)
+        if self._key == "top_ten":
+            return top_ten[0].get("1") if top_ten else None
         return None
 
     def _stat_value(self):
@@ -309,6 +404,40 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 "game_url": f"https://retroachievements.org/game/{recent_game.get('GameID')}",
             }
 
+        if self._key in _SOCIAL_KEYS:
+            return self._social_attributes()
+
+        return {}
+
+    def _social_attributes(self):
+        """Return state attributes for social sensors."""
+        data = self.coordinator.data
+        if self._key == "following_count":
+            return {"users": (data.get("following") or {}).get("Results", [])}
+        if self._key == "followers_count":
+            return {"users": (data.get("followers") or {}).get("Results", [])}
+        if self._key == "set_requests":
+            set_requests = data.get("set_requests") or {}
+            return {
+                "points_for_next": set_requests.get("PointsForNext"),
+                "requested_sets": set_requests.get("RequestedSets", []),
+            }
+        if self._key == "achievements_earned_today":
+            return {"achievements": data.get("earned_on_day") or []}
+        if self._key == "recent_game_awards":
+            return {"awards": (data.get("recent_game_awards") or {}).get("Results", [])}
+        if self._key == "top_ten":
+            return {
+                "users": [
+                    {
+                        "username": entry.get("1"),
+                        "points": entry.get("2"),
+                        "true_points": entry.get("3"),
+                        "id": entry.get("4"),
+                    }
+                    for entry in (data.get("top_ten") or [])
+                ]
+            }
         return {}
 
 
@@ -476,6 +605,16 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
             )
         if game_achievements:
             attrs["achievements"] = game_achievements
+        leaderboards = (
+            (self.coordinator.data or {})
+            .get("Leaderboards", {})
+            .get(str(self._game_id), {})
+        )
+        results = (
+            leaderboards.get("Results") if isinstance(leaderboards, dict) else None
+        )
+        if results:
+            attrs["leaderboards"] = results
         return attrs
 
 

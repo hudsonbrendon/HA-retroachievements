@@ -1,0 +1,8 @@
+{
+  "Count": 2,
+  "Total": 2,
+  "Results": [
+    {"User": "SomeUser", "AwardKind": "mastered", "AwardDate": "2026-05-25T08:00:00.000Z", "GameID": 678, "GameTitle": "Sonic the Hedgehog", "ConsoleID": 1, "ConsoleName": "Mega Drive"},
+    {"User": "OtherUser", "AwardKind": "beaten-hardcore", "AwardDate": "2026-05-25T07:00:00.000Z", "GameID": 700, "GameTitle": "Streets of Rage", "ConsoleID": 1, "ConsoleName": "Mega Drive"}
+  ]
+}

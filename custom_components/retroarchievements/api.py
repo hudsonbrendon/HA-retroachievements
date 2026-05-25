@@ -173,6 +173,70 @@ class RetroAchievementsApiClient:
         )
         return response.get("Achievements", [])
 
+    async def async_get_top_ten_users(self) -> list[dict[str, Any]]:
+        """Get the top ten users by hardcore points."""
+        response = await self._api_wrapper(
+            endpoint="API_GetTopTenUsers.php",
+            params={"y": self._api_key},
+        )
+        return response if isinstance(response, list) else []
+
+    async def async_get_users_i_follow(self) -> dict[str, Any]:
+        """Get the list of users the configured user follows."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUsersIFollow.php",
+            params={"c": 100, "o": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_users_following_me(self) -> dict[str, Any]:
+        """Get the list of users following the configured user."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUsersFollowingMe.php",
+            params={"c": 100, "o": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_user_set_requests(self) -> dict[str, Any]:
+        """Get the user's achievement set requests and remaining allowance."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserSetRequests.php",
+            params={"u": self._username, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_achievements_earned_on_day(
+        self, on_date: str
+    ) -> list[dict[str, Any]]:
+        """Get achievements the user earned on a specific day (YYYY-MM-DD)."""
+        response = await self._api_wrapper(
+            endpoint="API_GetAchievementsEarnedOnDay.php",
+            params={"u": self._username, "d": on_date, "y": self._api_key},
+        )
+        return response if isinstance(response, list) else []
+
+    async def async_get_recent_game_awards(self) -> dict[str, Any]:
+        """Get recent game awards (mastered/completed) across the site."""
+        response = await self._api_wrapper(
+            endpoint="API_GetRecentGameAwards.php",
+            params={"c": 25, "o": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_user_game_leaderboards(self, game_id: int) -> dict[str, Any]:
+        """Get the user's leaderboard entries for a specific game."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserGameLeaderboards.php",
+            params={
+                "i": game_id,
+                "u": self._username,
+                "c": 200,
+                "o": 0,
+                "y": self._api_key,
+            },
+        )
+        return response if isinstance(response, dict) else {}
+
     async def _api_wrapper(
         self,
         endpoint: str,

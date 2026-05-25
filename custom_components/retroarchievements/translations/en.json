@@ -352,6 +352,24 @@
             },
             "awards_total": {
                 "name": "Total Awards"
+            },
+            "following_count": {
+                "name": "Following"
+            },
+            "followers_count": {
+                "name": "Followers"
+            },
+            "set_requests": {
+                "name": "Set Requests"
+            },
+            "achievements_earned_today": {
+                "name": "Achievements Earned Today"
+            },
+            "recent_game_awards": {
+                "name": "Recent Game Awards"
+            },
+            "top_ten": {
+                "name": "Top Ten Leader"
             }
         },
         "binary_sensor": {

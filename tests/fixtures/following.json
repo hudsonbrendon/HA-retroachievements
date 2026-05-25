@@ -1,0 +1,8 @@
+{
+  "Count": 2,
+  "Total": 2,
+  "Results": [
+    {"User": "FriendOne", "Points": 12000, "PointsSoftcore": 100, "IsFollowingMe": true, "LastSeen": "Playing Sonic"},
+    {"User": "FriendTwo", "Points": 8000, "PointsSoftcore": 0, "IsFollowingMe": false, "LastSeen": "Offline"}
+  ]
+}

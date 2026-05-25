@@ -63,6 +63,48 @@ def want_to_play_fixture() -> dict:
 
 
 @pytest.fixture
+def top_ten_fixture() -> list:
+    """Return the sample GetTopTenUsers payload."""
+    return load_fixture("top_ten.json")
+
+
+@pytest.fixture
+def following_fixture() -> dict:
+    """Return the sample GetUsersIFollow payload."""
+    return load_fixture("following.json")
+
+
+@pytest.fixture
+def followers_fixture() -> dict:
+    """Return the sample GetUsersFollowingMe payload."""
+    return load_fixture("followers.json")
+
+
+@pytest.fixture
+def set_requests_fixture() -> dict:
+    """Return the sample GetUserSetRequests payload."""
+    return load_fixture("set_requests.json")
+
+
+@pytest.fixture
+def earned_on_day_fixture() -> list:
+    """Return the sample GetAchievementsEarnedOnDay payload."""
+    return load_fixture("earned_on_day.json")
+
+
+@pytest.fixture
+def recent_game_awards_fixture() -> dict:
+    """Return the sample GetRecentGameAwards payload."""
+    return load_fixture("recent_game_awards.json")
+
+
+@pytest.fixture
+def user_game_leaderboards_fixture() -> dict:
+    """Return the sample GetUserGameLeaderboards payload."""
+    return load_fixture("user_game_leaderboards.json")
+
+
+@pytest.fixture
 def mock_api_client(
     user_summary_fixture,
     aotw_fixture,
@@ -71,6 +113,13 @@ def mock_api_client(
     completion_progress_fixture,
     user_awards_fixture,
     want_to_play_fixture,
+    top_ten_fixture,
+    following_fixture,
+    followers_fixture,
+    set_requests_fixture,
+    earned_on_day_fixture,
+    recent_game_awards_fixture,
+    user_game_leaderboards_fixture,
 ):
     """Return an AsyncMock API client preloaded with fixture responses."""
     # Local import to keep the heavy HA import out of fixture-discovery time
@@ -90,4 +139,13 @@ def mock_api_client(
     client.async_get_user_completion_progress.return_value = completion_progress_fixture
     client.async_get_user_awards.return_value = user_awards_fixture
     client.async_get_user_want_to_play_list.return_value = want_to_play_fixture
+    client.async_get_top_ten_users.return_value = top_ten_fixture
+    client.async_get_users_i_follow.return_value = following_fixture
+    client.async_get_users_following_me.return_value = followers_fixture
+    client.async_get_user_set_requests.return_value = set_requests_fixture
+    client.async_get_achievements_earned_on_day.return_value = earned_on_day_fixture
+    client.async_get_recent_game_awards.return_value = recent_game_awards_fixture
+    client.async_get_user_game_leaderboards.return_value = (
+        user_game_leaderboards_fixture
+    )
     return client

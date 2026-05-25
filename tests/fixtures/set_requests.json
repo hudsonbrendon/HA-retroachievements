@@ -1,0 +1,8 @@
+{
+  "TotalRequests": 5,
+  "PointsForNext": 2500,
+  "RequestedSets": [
+    {"GameID": 1234, "Title": "Some Game", "ConsoleName": "NES"},
+    {"GameID": 1235, "Title": "Another Game", "ConsoleName": "SNES"}
+  ]
+}
