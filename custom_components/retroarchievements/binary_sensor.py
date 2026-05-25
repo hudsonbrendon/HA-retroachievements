@@ -85,9 +85,7 @@ class RetroAchievementsIsGamingBinarySensor(CoordinatorEntity, BinarySensorEntit
         return (now - last).total_seconds() <= threshold_seconds
 
 
-class RetroAchievementsAOTWUnlockedBinarySensor(
-    CoordinatorEntity, BinarySensorEntity
-):
+class RetroAchievementsAOTWUnlockedBinarySensor(CoordinatorEntity, BinarySensorEntity):
     """Binary sensor that is ON when the user has unlocked the current AOTW."""
 
     _attr_has_entity_name = True

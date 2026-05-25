@@ -24,6 +24,7 @@ from .const import (
     ATTR_POINTS_TOTAL,
     CONF_USERNAME,
     DOMAIN,
+    LOGGER,
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
@@ -493,8 +494,6 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
         self._game_id = game_data.get("GameID")
         self._game_title = game_data.get("Title")
         self._console_name = game_data.get("ConsoleName")
-
-        from .const import LOGGER
 
         LOGGER.debug(
             "Creating recently played sensor for game: %s (ID: %s, Console: %s)",

@@ -1,4 +1,5 @@
 """Tests for the AOTW sensor."""
+
 from __future__ import annotations
 
 import pytest
@@ -23,9 +24,7 @@ def mock_entry():
     )
 
 
-async def test_aotw_sensor_state_and_attributes(
-    hass, mock_api_client, mock_entry
-):
+async def test_aotw_sensor_state_and_attributes(hass, mock_api_client, mock_entry):
     coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
     await coord.async_refresh()
     sensor = RetroAchievementsAOTWSensor(coord, "TestUser")
