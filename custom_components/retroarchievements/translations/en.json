@@ -9,15 +9,25 @@
                     "api_key": "API Key",
                     "scan_interval": "Scan interval (seconds)"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Re-authenticate RetroAchievements",
+                "description": "The API key for {username} is no longer valid. Enter a new one.",
+                "data": {
+                    "api_key": "API Key"
+                }
             }
         },
         "error": {
             "cannot_connect": "Failed to connect",
             "invalid_auth": "Invalid authentication",
+            "auth": "Invalid API key or username",
+            "connection": "Failed to connect",
             "unknown": "Unexpected error"
         },
         "abort": {
-            "already_configured": "Account is already configured"
+            "already_configured": "Account is already configured",
+            "reauth_successful": "Re-authentication was successful"
         }
     },
     "options": {
@@ -26,7 +36,8 @@
                 "title": "RetroAchievements Options",
                 "description": "Configure options for RetroAchievements.",
                 "data": {
-                    "monitored_games": "Game IDs to monitor (one ID per line)"
+                    "monitored_games": "Game IDs to monitor (one ID per line)",
+                    "gaming_idle_threshold": "Gaming idle threshold (minutes)"
                 }
             }
         }
@@ -291,6 +302,82 @@
                         "name": "Achievements"
                     }
                 }
+            },
+            "aotw": {
+                "name": "Achievement of the Week",
+                "state_attributes": {
+                    "achievement_id": {
+                        "name": "Achievement ID"
+                    },
+                    "description": {
+                        "name": "Description"
+                    },
+                    "points": {
+                        "name": "Points"
+                    },
+                    "badge_url": {
+                        "name": "Badge URL"
+                    },
+                    "game_id": {
+                        "name": "Game ID"
+                    },
+                    "game_title": {
+                        "name": "Game Title"
+                    },
+                    "console_name": {
+                        "name": "Console"
+                    },
+                    "week_start": {
+                        "name": "Week Start"
+                    },
+                    "author": {
+                        "name": "Author"
+                    }
+                }
+            },
+            "hardcore_points": {
+                "name": "Hardcore Points"
+            },
+            "softcore_points": {
+                "name": "Softcore Points"
+            },
+            "games_mastered": {
+                "name": "Games Mastered"
+            },
+            "games_beaten": {
+                "name": "Games Beaten"
+            },
+            "games_played": {
+                "name": "Games Played"
+            },
+            "awards_total": {
+                "name": "Total Awards"
+            }
+        },
+        "binary_sensor": {
+            "is_gaming": {
+                "name": "Is Gaming"
+            },
+            "aotw_unlocked": {
+                "name": "AOTW Unlocked"
+            }
+        },
+        "image": {
+            "box_art": {
+                "name": "Current Game Box Art"
+            },
+            "last_badge": {
+                "name": "Last Achievement Badge"
+            }
+        },
+        "todo": {
+            "want_to_play": {
+                "name": "Want to Play"
+            }
+        },
+        "button": {
+            "refresh": {
+                "name": "Refresh"
             }
         }
     }
