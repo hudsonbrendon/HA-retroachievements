@@ -1,0 +1,7 @@
+{
+  "Count": 1,
+  "Total": 1,
+  "Results": [
+    {"ID": 9001, "Title": "Fastest Any%", "Description": "Beat the game fast", "UserEntry": {"User": "TestUser", "Score": 123456, "FormattedScore": "20:34", "Rank": 7}}
+  ]
+}

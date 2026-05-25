@@ -182,6 +182,24 @@
             },
             "awards_total": {
                 "name": "Total de Prêmios"
+            },
+            "following_count": {
+                "name": "Seguindo"
+            },
+            "followers_count": {
+                "name": "Seguidores"
+            },
+            "set_requests": {
+                "name": "Pedidos de Conjuntos"
+            },
+            "achievements_earned_today": {
+                "name": "Conquistas Obtidas Hoje"
+            },
+            "recent_game_awards": {
+                "name": "Prêmios de Jogos Recentes"
+            },
+            "top_ten": {
+                "name": "Líder do Top 10"
             }
         },
         "image": {

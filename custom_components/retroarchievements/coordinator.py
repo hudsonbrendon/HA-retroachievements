@@ -8,6 +8,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 
 from .api import RetroAchievementsApiClient
 from .const import (
@@ -164,6 +165,15 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.warning("Failed to fetch %s: %s", label, err)
             return {}
 
+    async def _safe_get_list(self, coro_factory, label: str) -> list:
+        """Await coro_factory(); return [] on error so refresh continues."""
+        try:
+            data = await coro_factory()
+            return data if isinstance(data, list) else []
+        except Exception as err:  # pylint: disable=broad-except
+            LOGGER.warning("Failed to fetch %s: %s", label, err)
+            return []
+
     @staticmethod
     def _extract_award_keys(awards: dict) -> set[str]:
         """Build a set of stable keys for the user's visible awards."""
@@ -211,6 +221,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         try:
+            today = dt_util.now().strftime("%Y-%m-%d")
             (
                 user_summary,
                 game_data,
@@ -219,6 +230,12 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 completion_progress,
                 awards,
                 want_to_play,
+                top_ten,
+                following,
+                followers,
+                set_requests,
+                earned_on_day,
+                recent_game_awards,
             ) = await asyncio.gather(
                 self.api_client.async_get_user_summary(),
                 self._get_game_data(),
@@ -232,6 +249,25 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 self._safe_get(
                     self.api_client.async_get_user_want_to_play_list,
                     "want to play list",
+                ),
+                self._safe_get_list(
+                    self.api_client.async_get_top_ten_users, "top ten users"
+                ),
+                self._safe_get(
+                    self.api_client.async_get_users_i_follow, "users i follow"
+                ),
+                self._safe_get(
+                    self.api_client.async_get_users_following_me, "users following me"
+                ),
+                self._safe_get(
+                    self.api_client.async_get_user_set_requests, "set requests"
+                ),
+                self._safe_get_list(
+                    lambda: self.api_client.async_get_achievements_earned_on_day(today),
+                    "achievements earned on day",
+                ),
+                self._safe_get(
+                    self.api_client.async_get_recent_game_awards, "recent game awards"
                 ),
             )
 
@@ -278,6 +314,12 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 "completion_progress": completion_progress,
                 "awards": awards,
                 "want_to_play": want_to_play,
+                "top_ten": top_ten,
+                "following": following,
+                "followers": followers,
+                "set_requests": set_requests,
+                "earned_on_day": earned_on_day,
+                "recent_game_awards": recent_game_awards,
                 **game_data,
             }
         except Exception as error:
@@ -357,24 +399,40 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.monitored_games = monitored_game_ids
 
-        game_data = {"Awarded": {}}
+        game_data = {"Awarded": {}, "Leaderboards": {}}
         if not monitored_game_ids:
             return game_data
 
-        tasks = [
-            self.api_client.async_get_user_progress(game_id)
-            for game_id in monitored_game_ids
+        game_ids = list(monitored_game_ids)
+
+        progress_tasks = [
+            self.api_client.async_get_user_progress(game_id) for game_id in game_ids
+        ]
+        leaderboard_tasks = [
+            self.api_client.async_get_user_game_leaderboards(game_id)
+            for game_id in game_ids
         ]
 
-        if tasks:
-            game_progresses = await asyncio.gather(*tasks, return_exceptions=True)
+        game_progresses = await asyncio.gather(*progress_tasks, return_exceptions=True)
+        leaderboards = await asyncio.gather(*leaderboard_tasks, return_exceptions=True)
 
-            for i, game_progress in enumerate(game_progresses):
-                if isinstance(game_progress, Exception):
-                    LOGGER.error("Error fetching game progress: %s", game_progress)
-                    continue
+        for i, game_id in enumerate(game_ids):
+            game_id_str = str(game_id)
 
-                game_id = str(list(monitored_game_ids)[i])
-                game_data["Awarded"][game_id] = game_progress
+            game_progress = game_progresses[i]
+            if isinstance(game_progress, Exception):
+                LOGGER.error("Error fetching game progress: %s", game_progress)
+            else:
+                game_data["Awarded"][game_id_str] = game_progress
+
+            leaderboard = leaderboards[i]
+            if isinstance(leaderboard, Exception):
+                LOGGER.warning(
+                    "Error fetching leaderboards for game_id=%s: %s",
+                    game_id,
+                    leaderboard,
+                )
+            elif isinstance(leaderboard, dict):
+                game_data["Leaderboards"][game_id_str] = leaderboard
 
         return game_data
