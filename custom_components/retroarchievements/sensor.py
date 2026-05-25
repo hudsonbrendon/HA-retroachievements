@@ -24,8 +24,20 @@ from .const import (
     ATTR_POINTS_TOTAL,
     CONF_USERNAME,
     DOMAIN,
+    LOGGER,
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
+
+_STAT_KEYS = frozenset(
+    {
+        "hardcore_points",
+        "softcore_points",
+        "games_mastered",
+        "games_beaten",
+        "games_played",
+        "awards_total",
+    }
+)
 
 USER_SENSORS = [
     SensorEntityDescription(
@@ -74,6 +86,42 @@ USER_SENSORS = [
         translation_key="recently_played",
         icon="mdi:history",
     ),
+    SensorEntityDescription(
+        key="hardcore_points",
+        translation_key="hardcore_points",
+        icon="mdi:trophy",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="softcore_points",
+        translation_key="softcore_points",
+        icon="mdi:trophy-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_mastered",
+        translation_key="games_mastered",
+        icon="mdi:medal",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_beaten",
+        translation_key="games_beaten",
+        icon="mdi:flag-checkered",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="games_played",
+        translation_key="games_played",
+        icon="mdi:gamepad-square",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="awards_total",
+        translation_key="awards_total",
+        icon="mdi:medal-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 ]
 
 
@@ -104,6 +152,12 @@ async def async_setup_entry(
                     username=username,
                 )
             )
+        entities.append(
+            RetroAchievementsAOTWSensor(
+                coordinator=coordinator,
+                username=username,
+            )
+        )
         if "RecentlyPlayed" in user_data:
             for game in user_data["RecentlyPlayed"]:
                 entities.append(
@@ -197,7 +251,26 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 recent_game = data["RecentlyPlayed"][0]
                 return f"{recent_game.get('Title')} - {recent_game.get('ConsoleName')}"
             return "None"
+        if self._key in _STAT_KEYS:
+            return self._stat_value()
         return None
+
+    def _stat_value(self):
+        """Return a value for stat keys sourced from top-level coordinator data."""
+        points = self.coordinator.data.get("user_points") or {}
+        awards = self.coordinator.data.get("awards") or {}
+        progress = self.coordinator.data.get("completion_progress") or {}
+        return {
+            "hardcore_points": points.get("Points", 0),
+            "softcore_points": points.get("SoftcorePoints", 0),
+            "games_mastered": awards.get("MasteryAwardsCount", 0),
+            "games_beaten": (
+                awards.get("BeatenHardcoreAwardsCount", 0)
+                + awards.get("BeatenSoftcoreAwardsCount", 0)
+            ),
+            "games_played": progress.get("Total", 0),
+            "awards_total": awards.get("TotalAwardsCount", 0),
+        }[self._key]
 
     @property
     def extra_state_attributes(self):
@@ -422,8 +495,6 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
         self._game_title = game_data.get("Title")
         self._console_name = game_data.get("ConsoleName")
 
-        from .const import LOGGER
-
         LOGGER.debug(
             "Creating recently played sensor for game: %s (ID: %s, Console: %s)",
             self._game_title,
@@ -465,4 +536,47 @@ class RetroAchievementsRecentlyPlayedSensor(RetroAchievementsBaseSensor):
             "last_played": self._game_data.get("LastPlayed"),
             "achievements_total": self._game_data.get("AchievementsTotal", 0),
             "game_url": f"https://retroachievements.org/game/{self._game_id}",
+        }
+
+
+class RetroAchievementsAOTWSensor(RetroAchievementsBaseSensor):
+    """Representation of the Achievement of the Week sensor."""
+
+    def __init__(
+        self,
+        coordinator: RetroAchievementsDataUpdateCoordinator,
+        username: str,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, username)
+        self._attr_unique_id = f"{DOMAIN}_{username}_aotw"
+        self._attr_translation_key = "aotw"
+        self._attr_has_entity_name = True
+        self._attr_icon = "mdi:calendar-star"
+
+    @property
+    def native_value(self):
+        """Return the AOTW title or None."""
+        aotw = (self.coordinator.data or {}).get("aotw") or {}
+        return (aotw.get("Achievement") or {}).get("Title")
+
+    @property
+    def extra_state_attributes(self):
+        """Return AOTW attributes."""
+        aotw = (self.coordinator.data or {}).get("aotw") or {}
+        ach = aotw.get("Achievement") or {}
+        game = aotw.get("Game") or {}
+        badge = ach.get("BadgeName")
+        return {
+            "achievement_id": ach.get("ID"),
+            "description": ach.get("Description"),
+            "points": ach.get("Points"),
+            "badge_url": (
+                f"https://retroachievements.org/Badge/{badge}.png" if badge else None
+            ),
+            "game_id": game.get("ID"),
+            "game_title": game.get("Title"),
+            "console_name": game.get("ConsoleName"),
+            "week_start": aotw.get("StartAt"),
+            "author": ach.get("Author"),
         }
