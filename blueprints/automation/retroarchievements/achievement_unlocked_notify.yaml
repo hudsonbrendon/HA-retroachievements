@@ -1,0 +1,43 @@
+blueprint:
+  name: RetroAchievements - Notify on achievement unlocked
+  description: >
+    Send a notification (with the achievement badge) whenever the RetroAchievements
+    integration fires a `retroarchievements_achievement_unlocked` event.
+  domain: automation
+  author: hudsonbrendon
+  input:
+    notify_target:
+      name: Notification service
+      description: The notify service to call (e.g. notify.mobile_app_phone).
+      selector:
+        text: {}
+    only_hardcore:
+      name: Hardcore only
+      description: Only notify for achievements unlocked in hardcore mode.
+      default: false
+      selector:
+        boolean: {}
+
+mode: queued
+max: 10
+
+variables:
+  only_hardcore: !input only_hardcore
+
+trigger:
+  - platform: event
+    event_type: retroarchievements_achievement_unlocked
+
+condition:
+  - condition: template
+    value_template: "{{ not only_hardcore or trigger.event.data.hardcore }}"
+
+action:
+  - service: !input notify_target
+    data:
+      title: "🏆 Achievement unlocked!"
+      message: >
+        {{ trigger.event.data.title }} ({{ trigger.event.data.points }} pts)
+        — {{ trigger.event.data.game_title }}
+      data:
+        image: "{{ trigger.event.data.badge_url }}"

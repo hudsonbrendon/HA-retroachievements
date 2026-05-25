@@ -8,6 +8,13 @@
                     "username": "Nome de usuário",
                     "api_key": "Chave API"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Reautenticar RetroAchievements",
+                "description": "A chave API de {username} não é mais válida. Informe uma nova.",
+                "data": {
+                    "api_key": "Chave API"
+                }
             }
         },
         "error": {
@@ -16,7 +23,8 @@
             "unknown": "Ocorreu um erro desconhecido."
         },
         "abort": {
-            "already_configured": "Esta conta RetroAchievements já está configurada."
+            "already_configured": "Esta conta RetroAchievements já está configurada.",
+            "reauth_successful": "Reautenticação concluída com sucesso."
         }
     },
     "options": {
@@ -156,6 +164,42 @@
                     "completion_percentage": "Percentual de Conclusão",
                     "achievements": "Conquistas"
                 }
+            },
+            "hardcore_points": {
+                "name": "Pontos Hardcore"
+            },
+            "softcore_points": {
+                "name": "Pontos Softcore"
+            },
+            "games_mastered": {
+                "name": "Jogos Masterizados"
+            },
+            "games_beaten": {
+                "name": "Jogos Zerados"
+            },
+            "games_played": {
+                "name": "Jogos Jogados"
+            },
+            "awards_total": {
+                "name": "Total de Prêmios"
+            }
+        },
+        "image": {
+            "box_art": {
+                "name": "Capa do Jogo Atual"
+            },
+            "last_badge": {
+                "name": "Último Emblema de Conquista"
+            }
+        },
+        "todo": {
+            "want_to_play": {
+                "name": "Quero Jogar"
+            }
+        },
+        "button": {
+            "refresh": {
+                "name": "Atualizar"
             }
         }
     }

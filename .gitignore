@@ -16,3 +16,8 @@ coverage.xml
 # Home Assistant configuration
 config/*
 !config/configuration.yaml
+
+# python / pytest
+.venv/
+__pycache__/
+.pytest_cache/
