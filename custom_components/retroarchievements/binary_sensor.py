@@ -14,6 +14,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import CONF_USERNAME, DOMAIN
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
+PARALLEL_UPDATES = 0
+
 
 def _user_device_info(username: str) -> DeviceInfo:
     return DeviceInfo(
@@ -33,9 +35,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up binary sensors based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    coordinator: RetroAchievementsDataUpdateCoordinator = hass.data[DOMAIN][
-        entry.entry_id
-    ]["coordinator"]
+    coordinator: RetroAchievementsDataUpdateCoordinator = entry.runtime_data
     async_add_entities(
         [
             RetroAchievementsIsGamingBinarySensor(coordinator, username),

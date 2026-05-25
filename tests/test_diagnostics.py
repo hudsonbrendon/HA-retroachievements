@@ -27,7 +27,7 @@ def mock_entry():
 async def test_diagnostics_redacts_api_key(hass, mock_api_client, mock_entry):
     coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
     await coord.async_refresh()
-    hass.data.setdefault(DOMAIN, {})[mock_entry.entry_id] = {"coordinator": coord}
+    mock_entry.runtime_data = coord
 
     result = await async_get_config_entry_diagnostics(hass, mock_entry)
 

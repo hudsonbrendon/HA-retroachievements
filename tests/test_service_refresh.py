@@ -44,7 +44,7 @@ async def test_service_calls_coordinator_refresh(
         await hass.config_entries.async_setup(mock_entry.entry_id)
         await hass.async_block_till_done()
 
-    coordinator = hass.data[DOMAIN][mock_entry.entry_id]["coordinator"]
+    coordinator = mock_entry.runtime_data
     coordinator.async_request_refresh = AsyncMock()
     await hass.services.async_call(DOMAIN, SERVICE_REFRESH, {}, blocking=True)
     coordinator.async_request_refresh.assert_awaited()

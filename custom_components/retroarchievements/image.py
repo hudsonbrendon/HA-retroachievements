@@ -13,6 +13,7 @@ from .const import CONF_USERNAME, DOMAIN
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 from .entity import user_device_info
 
+PARALLEL_UPDATES = 0
 BASE_SITE_URL = "https://retroachievements.org"
 
 
@@ -23,9 +24,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the image entities based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    coordinator: RetroAchievementsDataUpdateCoordinator = hass.data[DOMAIN][
-        entry.entry_id
-    ]["coordinator"]
+    coordinator: RetroAchievementsDataUpdateCoordinator = entry.runtime_data
     async_add_entities(
         [
             RetroAchievementsBoxArtImage(hass, coordinator, username),

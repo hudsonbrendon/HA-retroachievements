@@ -2,27 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.diagnostics import async_redact_data
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
-from .coordinator import RetroAchievementsDataUpdateCoordinator
+if TYPE_CHECKING:
+    from . import RetroAchievementsConfigEntry
 
 TO_REDACT = {CONF_API_KEY}
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: RetroAchievementsConfigEntry
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry."""
-    store = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
-    coordinator: RetroAchievementsDataUpdateCoordinator | None = store.get(
-        "coordinator"
-    )
+    coordinator = getattr(entry, "runtime_data", None)
     return {
         "entry": {
             "data": async_redact_data(dict(entry.data), TO_REDACT),

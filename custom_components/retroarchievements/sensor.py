@@ -5,6 +5,7 @@ from __future__ import annotations
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -28,6 +29,9 @@ from .const import (
 )
 from .coordinator import RetroAchievementsDataUpdateCoordinator
 
+# Coordinator already fetches everything; entity reads are local. No throttling.
+PARALLEL_UPDATES = 0
+
 _STAT_KEYS = frozenset(
     {
         "hardcore_points",
@@ -49,18 +53,23 @@ USER_SENSORS = [
         key="total_points",
         translation_key="total_points",
         icon="mdi:trophy",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="true_points",
         translation_key="true_points",
         icon="mdi:trophy-award",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="rank",
         translation_key="rank",
         icon="mdi:podium",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # Currently playing sensor removed
@@ -79,6 +88,7 @@ USER_SENSORS = [
         key="recently_played_count",
         translation_key="recently_played_count",
         icon="mdi:controller",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
@@ -90,36 +100,44 @@ USER_SENSORS = [
         key="hardcore_points",
         translation_key="hardcore_points",
         icon="mdi:trophy",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="softcore_points",
         translation_key="softcore_points",
         icon="mdi:trophy-outline",
+        native_unit_of_measurement="points",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_mastered",
         translation_key="games_mastered",
         icon="mdi:medal",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_beaten",
         translation_key="games_beaten",
         icon="mdi:flag-checkered",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="games_played",
         translation_key="games_played",
         icon="mdi:gamepad-square",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="awards_total",
         translation_key="awards_total",
         icon="mdi:medal-outline",
+        state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
 ]
@@ -132,7 +150,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up RetroAchievements sensors based on a config entry."""
     username = entry.data[CONF_USERNAME]
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = entry.runtime_data
 
     entities = []
     if coordinator.data and "user_summary" in coordinator.data:

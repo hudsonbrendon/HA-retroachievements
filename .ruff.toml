@@ -36,6 +36,7 @@ ignore = [
     "FBT003", # Boolean positional value in function call
     "PLR0911", # Too many return statements
     "D107", # Missing docstring in __init__
+    "ARG001", # Unused function argument (HA-mandated callback signatures, e.g. hass)
 ]
 
 [lint.flake8-pytest-style]
