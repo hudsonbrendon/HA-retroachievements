@@ -97,6 +97,38 @@ class RetroAchievementsApiClient:
         )
         return response if isinstance(response, dict) else {}
 
+    async def async_get_user_points(self) -> dict[str, Any]:
+        """Get the user's hardcore and softcore point totals."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserPoints.php",
+            params={"u": self._username, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_user_completion_progress(self) -> dict[str, Any]:
+        """Get metadata about all the user's played games and their awards."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserCompletionProgress.php",
+            params={"u": self._username, "c": 500, "o": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_user_awards(self) -> dict[str, Any]:
+        """Get the user's site awards/badges."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserAwards.php",
+            params={"u": self._username, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
+    async def async_get_user_want_to_play_list(self) -> dict[str, Any]:
+        """Get the user's 'Want to Play Games' backlog."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserWantToPlayList.php",
+            params={"u": self._username, "c": 100, "o": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, dict) else {}
+
     async def async_get_game_extended(self, game_id: int) -> dict[str, Any]:
         """Get extended game metadata including per-achievement award counts."""
         response = await self._api_wrapper(

@@ -1,0 +1,36 @@
+{
+  "TotalAwardsCount": 12,
+  "HiddenAwardsCount": 0,
+  "MasteryAwardsCount": 8,
+  "CompletionAwardsCount": 1,
+  "BeatenHardcoreAwardsCount": 2,
+  "BeatenSoftcoreAwardsCount": 1,
+  "EventAwardsCount": 0,
+  "SiteAwardsCount": 0,
+  "VisibleUserAwards": [
+    {
+      "AwardedAt": "2026-05-18T11:55:00.000Z",
+      "AwardType": "Mastery/Completion",
+      "AwardData": 678,
+      "AwardDataExtra": 1,
+      "Value": 1,
+      "Title": "Sonic the Hedgehog",
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "Flags": 0,
+      "ImageIcon": "/Images/sonic-icon.png"
+    },
+    {
+      "AwardedAt": "2026-05-10T10:00:00.000Z",
+      "AwardType": "Game Beaten",
+      "AwardData": 700,
+      "AwardDataExtra": 1,
+      "Value": 1,
+      "Title": "Streets of Rage",
+      "ConsoleID": 1,
+      "ConsoleName": "Mega Drive",
+      "Flags": 0,
+      "ImageIcon": "/Images/sor-icon.png"
+    }
+  ]
+}

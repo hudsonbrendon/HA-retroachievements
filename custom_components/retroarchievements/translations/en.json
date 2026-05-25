@@ -9,15 +9,25 @@
                     "api_key": "API Key",
                     "scan_interval": "Scan interval (seconds)"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Re-authenticate RetroAchievements",
+                "description": "The API key for {username} is no longer valid. Enter a new one.",
+                "data": {
+                    "api_key": "API Key"
+                }
             }
         },
         "error": {
             "cannot_connect": "Failed to connect",
             "invalid_auth": "Invalid authentication",
+            "auth": "Invalid API key or username",
+            "connection": "Failed to connect",
             "unknown": "Unexpected error"
         },
         "abort": {
-            "already_configured": "Account is already configured"
+            "already_configured": "Account is already configured",
+            "reauth_successful": "Re-authentication was successful"
         }
     },
     "options": {
@@ -324,6 +334,24 @@
                         "name": "Author"
                     }
                 }
+            },
+            "hardcore_points": {
+                "name": "Hardcore Points"
+            },
+            "softcore_points": {
+                "name": "Softcore Points"
+            },
+            "games_mastered": {
+                "name": "Games Mastered"
+            },
+            "games_beaten": {
+                "name": "Games Beaten"
+            },
+            "games_played": {
+                "name": "Games Played"
+            },
+            "awards_total": {
+                "name": "Total Awards"
             }
         },
         "binary_sensor": {
@@ -332,6 +360,24 @@
             },
             "aotw_unlocked": {
                 "name": "AOTW Unlocked"
+            }
+        },
+        "image": {
+            "box_art": {
+                "name": "Current Game Box Art"
+            },
+            "last_badge": {
+                "name": "Last Achievement Badge"
+            }
+        },
+        "todo": {
+            "want_to_play": {
+                "name": "Want to Play"
+            }
+        },
+        "button": {
+            "refresh": {
+                "name": "Refresh"
             }
         }
     }
