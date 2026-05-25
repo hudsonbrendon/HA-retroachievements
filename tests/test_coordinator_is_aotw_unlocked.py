@@ -1,4 +1,5 @@
 """Tests for RetroAchievementsDataUpdateCoordinator.is_aotw_unlocked."""
+
 from __future__ import annotations
 
 import pytest

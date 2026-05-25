@@ -1,4 +1,5 @@
 """Tests for the image, todo, and button platforms."""
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock
@@ -41,10 +42,7 @@ async def _coordinator(hass, mock_api_client, mock_entry):
 async def test_box_art_image_url(hass, mock_api_client, mock_entry):
     coord = await _coordinator(hass, mock_api_client, mock_entry)
     entity = RetroAchievementsBoxArtImage(hass, coord, "TestUser")
-    assert (
-        entity.image_url
-        == "https://retroachievements.org/Images/sonic-box.png"
-    )
+    assert entity.image_url == "https://retroachievements.org/Images/sonic-box.png"
 
 
 async def test_last_badge_image_url(hass, mock_api_client, mock_entry):

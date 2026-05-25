@@ -1,4 +1,5 @@
 """Tests for the expanded user-stat sensors."""
+
 from __future__ import annotations
 
 import pytest

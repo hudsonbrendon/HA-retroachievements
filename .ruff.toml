@@ -58,4 +58,5 @@ max-complexity = 25
     "ANN",    # type annotations
     "UP017",  # datetime.UTC alias (test files may use timezone.utc for clarity)
     "PLR0913", # many fixture args is normal for pytest fixtures
+    "PLC0415", # deliberate lazy imports inside fixtures (keep heavy imports out of discovery)
 ]

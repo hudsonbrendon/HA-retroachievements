@@ -1,4 +1,5 @@
 """Tests for the reauth config flow."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -30,15 +31,19 @@ async def test_reauth_success_updates_key(hass, mock_entry, enable_custom_integr
     assert result["type"] == "form"
     assert result["step_id"] == "reauth_confirm"
 
-    with patch(
-        "custom_components.retroarchievements.config_flow."
-        "RetroAchievementsApiClient.async_get_user_summary",
-        return_value={"User": "TestUser"},
-    ), patch(
-        "custom_components.retroarchievements.config_flow."
-        "async_create_clientsession",
-        return_value=MagicMock(),
-    ), patch.object(hass.config_entries, "async_schedule_reload"):
+    with (
+        patch(
+            "custom_components.retroarchievements.config_flow."
+            "RetroAchievementsApiClient.async_get_user_summary",
+            return_value={"User": "TestUser"},
+        ),
+        patch(
+            "custom_components.retroarchievements.config_flow."
+            "async_create_clientsession",
+            return_value=MagicMock(),
+        ),
+        patch.object(hass.config_entries, "async_schedule_reload"),
+    ):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"], user_input={CONF_API_KEY: "newkey"}
         )
@@ -53,14 +58,17 @@ async def test_reauth_invalid_key_shows_error(
 ):
     result = await mock_entry.start_reauth_flow(hass)
 
-    with patch(
-        "custom_components.retroarchievements.config_flow."
-        "RetroAchievementsApiClient.async_get_user_summary",
-        side_effect=RetroAchievementsApiClientAuthenticationError("bad"),
-    ), patch(
-        "custom_components.retroarchievements.config_flow."
-        "async_create_clientsession",
-        return_value=MagicMock(),
+    with (
+        patch(
+            "custom_components.retroarchievements.config_flow."
+            "RetroAchievementsApiClient.async_get_user_summary",
+            side_effect=RetroAchievementsApiClientAuthenticationError("bad"),
+        ),
+        patch(
+            "custom_components.retroarchievements.config_flow."
+            "async_create_clientsession",
+            return_value=MagicMock(),
+        ),
     ):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"], user_input={CONF_API_KEY: "stillbad"}

@@ -1,4 +1,5 @@
 """Tests for the is_gaming binary sensor."""
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone

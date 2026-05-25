@@ -1,4 +1,5 @@
 """Tests for coordinator event firing (achievement_unlocked, aotw_changed)."""
+
 from __future__ import annotations
 
 import pytest
@@ -24,18 +25,14 @@ def mock_entry():
     )
 
 
-async def test_first_run_does_not_fire_events(
-    hass, mock_api_client, mock_entry
-):
+async def test_first_run_does_not_fire_events(hass, mock_api_client, mock_entry):
     """On the very first refresh, neither event type fires."""
     fired_achievement = []
     fired_aotw = []
     hass.bus.async_listen(
         EVENT_ACHIEVEMENT_UNLOCKED, lambda e: fired_achievement.append(e)
     )
-    hass.bus.async_listen(
-        EVENT_AOTW_CHANGED, lambda e: fired_aotw.append(e)
-    )
+    hass.bus.async_listen(EVENT_AOTW_CHANGED, lambda e: fired_aotw.append(e))
     coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
     await coord.async_refresh()
     await hass.async_block_till_done()
@@ -93,9 +90,7 @@ async def test_new_achievement_fires_event_with_enriched_payload(
     assert payload["rarity_pct"] is None  # 12346 not in game_extended fixture
 
 
-async def test_no_new_achievements_fires_no_events(
-    hass, mock_api_client, mock_entry
-):
+async def test_no_new_achievements_fires_no_events(hass, mock_api_client, mock_entry):
     fired = []
     hass.bus.async_listen(EVENT_ACHIEVEMENT_UNLOCKED, lambda e: fired.append(e))
     coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
@@ -105,9 +100,7 @@ async def test_no_new_achievements_fires_no_events(
     assert fired == []
 
 
-async def test_aotw_change_fires_event(
-    hass, mock_api_client, mock_entry, aotw_fixture
-):
+async def test_aotw_change_fires_event(hass, mock_api_client, mock_entry, aotw_fixture):
     fired = []
     hass.bus.async_listen(EVENT_AOTW_CHANGED, lambda e: fired.append(e))
     coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
