@@ -1,4 +1,5 @@
 """Shared pytest fixtures."""
+
 from __future__ import annotations
 
 import json
@@ -79,16 +80,14 @@ def mock_api_client(
     client.username = "TestUser"
     client._username = "TestUser"
     client.async_get_user_summary.return_value = user_summary_fixture
-    client.async_get_user_recent_games.return_value = (
-        user_summary_fixture.get("RecentlyPlayed", [])
+    client.async_get_user_recent_games.return_value = user_summary_fixture.get(
+        "RecentlyPlayed", []
     )
     client.async_get_achievement_of_the_week.return_value = aotw_fixture
     client.async_get_game_extended.return_value = game_extended_fixture
     client.async_get_user_progress.return_value = {}
     client.async_get_user_points.return_value = user_points_fixture
-    client.async_get_user_completion_progress.return_value = (
-        completion_progress_fixture
-    )
+    client.async_get_user_completion_progress.return_value = completion_progress_fixture
     client.async_get_user_awards.return_value = user_awards_fixture
     client.async_get_user_want_to_play_list.return_value = want_to_play_fixture
     return client

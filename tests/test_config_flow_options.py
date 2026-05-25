@@ -1,4 +1,5 @@
 """Tests for the options flow with gaming_idle_threshold."""
+
 from __future__ import annotations
 
 import pytest
@@ -23,7 +24,9 @@ def mock_entry(hass):
     return entry
 
 
-async def test_options_flow_accepts_idle_threshold(hass, mock_entry, enable_custom_integrations):
+async def test_options_flow_accepts_idle_threshold(
+    hass, mock_entry, enable_custom_integrations
+):
     result = await hass.config_entries.options.async_init(mock_entry.entry_id)
     assert result["type"] == "form"
     result2 = await hass.config_entries.options.async_configure(
@@ -34,7 +37,9 @@ async def test_options_flow_accepts_idle_threshold(hass, mock_entry, enable_cust
     assert result2["data"][CONF_GAMING_IDLE_THRESHOLD] == 10
 
 
-async def test_options_flow_rejects_threshold_too_high(hass, mock_entry, enable_custom_integrations):
+async def test_options_flow_rejects_threshold_too_high(
+    hass, mock_entry, enable_custom_integrations
+):
     result = await hass.config_entries.options.async_init(mock_entry.entry_id)
     with pytest.raises(InvalidData):
         await hass.config_entries.options.async_configure(

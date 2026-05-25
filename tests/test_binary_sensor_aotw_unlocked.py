@@ -1,4 +1,5 @@
 """Tests for the aotw_unlocked binary sensor."""
+
 from __future__ import annotations
 
 import pytest
@@ -23,9 +24,7 @@ def mock_entry():
     )
 
 
-async def test_aotw_unlocked_true(
-    hass, mock_api_client, mock_entry, aotw_fixture
-):
+async def test_aotw_unlocked_true(hass, mock_api_client, mock_entry, aotw_fixture):
     aotw = {
         **aotw_fixture,
         "Achievement": {**aotw_fixture["Achievement"], "ID": 12345},

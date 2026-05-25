@@ -1,4 +1,5 @@
 """Tests for the coordinator's expanded data fetch + award_earned event."""
+
 from __future__ import annotations
 
 import pytest
@@ -77,7 +78,9 @@ async def test_new_award_fires_event(
     assert payload["award_type"] == "Mastery/Completion"
     assert payload["hardcore"] is True
     assert payload["console_name"] == "Mega Drive"
-    assert payload["image_url"] == "https://retroachievements.org/Images/aladdin-icon.png"
+    assert (
+        payload["image_url"] == "https://retroachievements.org/Images/aladdin-icon.png"
+    )
 
 
 async def test_unchanged_awards_fire_no_event(hass, mock_api_client, mock_entry):

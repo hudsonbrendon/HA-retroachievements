@@ -1,4 +1,5 @@
 """Tests for the retroarchievements.refresh service."""
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch

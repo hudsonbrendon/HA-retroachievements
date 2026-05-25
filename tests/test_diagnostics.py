@@ -1,4 +1,5 @@
 """Tests for config entry diagnostics."""
+
 from __future__ import annotations
 
 import pytest

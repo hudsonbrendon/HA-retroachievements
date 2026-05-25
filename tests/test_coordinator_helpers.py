@@ -1,4 +1,5 @@
 """Tests for pure-logic helpers on the coordinator."""
+
 from __future__ import annotations
 
 from custom_components.retroarchievements.coordinator import (
@@ -25,9 +26,7 @@ def test_extract_achievement_ids_from_recent_achievements():
 
 
 def test_extract_achievement_ids_empty_input():
-    assert (
-        RetroAchievementsDataUpdateCoordinator._extract_achievement_ids({}) == set()
-    )
+    assert RetroAchievementsDataUpdateCoordinator._extract_achievement_ids({}) == set()
     assert (
         RetroAchievementsDataUpdateCoordinator._extract_achievement_ids(
             {"RecentAchievements": None}
@@ -38,9 +37,7 @@ def test_extract_achievement_ids_empty_input():
 
 def test_extract_achievement_ids_skips_non_integer_keys():
     user_summary = {
-        "RecentAchievements": {
-            "678": {"abc": {"ID": 0}, "12345": {"ID": 12345}}
-        }
+        "RecentAchievements": {"678": {"abc": {"ID": 0}, "12345": {"ID": 12345}}}
     }
     result = RetroAchievementsDataUpdateCoordinator._extract_achievement_ids(
         user_summary
