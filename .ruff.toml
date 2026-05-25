@@ -57,4 +57,5 @@ max-complexity = 25
     "ARG001", # unused arg (pytest fixtures injected by name)
     "ANN",    # type annotations
     "UP017",  # datetime.UTC alias (test files may use timezone.utc for clarity)
+    "PLR0913", # many fixture args is normal for pytest fixtures
 ]

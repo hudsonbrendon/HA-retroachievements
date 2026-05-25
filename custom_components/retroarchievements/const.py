@@ -8,7 +8,13 @@ DOMAIN = "retroarchievements"
 LOGGER: Logger = getLogger(__package__)
 
 # Define platforms that this integration supports
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+PLATFORMS = [
+    Platform.SENSOR,
+    Platform.BINARY_SENSOR,
+    Platform.IMAGE,
+    Platform.TODO,
+    Platform.BUTTON,
+]
 
 # API
 BASE_URL = "https://retroachievements.org/API/"
@@ -48,3 +54,4 @@ SERVICE_REFRESH = "refresh"
 # Events
 EVENT_ACHIEVEMENT_UNLOCKED = f"{DOMAIN}_achievement_unlocked"
 EVENT_AOTW_CHANGED = f"{DOMAIN}_aotw_changed"
+EVENT_AWARD_EARNED = f"{DOMAIN}_award_earned"
