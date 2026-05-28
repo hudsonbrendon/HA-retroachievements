@@ -200,6 +200,27 @@
             },
             "top_ten": {
                 "name": "Líder do Top 10"
+            },
+            "want_to_play_count": {
+                "name": "Total Quero Jogar"
+            },
+            "last_achievement": {
+                "name": "Última Conquista",
+                "state_attributes": {
+                    "id": "ID",
+                    "title": "Título",
+                    "description": "Descrição",
+                    "points": "Pontos",
+                    "game": "Jogo",
+                    "date_awarded": "Data de Obtenção",
+                    "badge_url": "URL do Emblema",
+                    "url": "URL da Conquista"
+                }
+            }
+        },
+        "calendar": {
+            "achievements": {
+                "name": "Conquistas"
             }
         },
         "image": {

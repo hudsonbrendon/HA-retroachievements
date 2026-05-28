@@ -370,6 +370,43 @@
             },
             "top_ten": {
                 "name": "Top Ten Leader"
+            },
+            "want_to_play_count": {
+                "name": "Want to Play Count"
+            },
+            "last_achievement": {
+                "name": "Last Achievement",
+                "state_attributes": {
+                    "id": {
+                        "name": "ID"
+                    },
+                    "title": {
+                        "name": "Title"
+                    },
+                    "description": {
+                        "name": "Description"
+                    },
+                    "points": {
+                        "name": "Points"
+                    },
+                    "game": {
+                        "name": "Game"
+                    },
+                    "date_awarded": {
+                        "name": "Date Awarded"
+                    },
+                    "badge_url": {
+                        "name": "Badge URL"
+                    },
+                    "url": {
+                        "name": "Achievement URL"
+                    }
+                }
+            }
+        },
+        "calendar": {
+            "achievements": {
+                "name": "Achievements"
             }
         },
         "binary_sensor": {

@@ -237,6 +237,35 @@ class RetroAchievementsApiClient:
         )
         return response if isinstance(response, dict) else {}
 
+    async def async_get_user_game_rank_and_score(
+        self, game_id: int
+    ) -> list[dict[str, Any]]:
+        """Get the user's rank and score within a specific game."""
+        response = await self._api_wrapper(
+            endpoint="API_GetUserGameRankAndScore.php",
+            params={
+                "g": game_id,
+                "u": self._username,
+                "y": self._api_key,
+            },
+        )
+        return response if isinstance(response, list) else []
+
+    async def async_get_achievements_earned_between(
+        self, from_date: str, to_date: str
+    ) -> list[dict[str, Any]]:
+        """Get achievements the user earned between two dates (YYYY-MM-DD)."""
+        response = await self._api_wrapper(
+            endpoint="API_GetAchievementsEarnedBetween.php",
+            params={
+                "u": self._username,
+                "f": from_date,
+                "t": to_date,
+                "y": self._api_key,
+            },
+        )
+        return response if isinstance(response, list) else []
+
     async def _api_wrapper(
         self,
         endpoint: str,

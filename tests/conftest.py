@@ -105,6 +105,18 @@ def user_game_leaderboards_fixture() -> dict:
 
 
 @pytest.fixture
+def earned_between_fixture() -> list:
+    """Return the sample GetAchievementsEarnedBetween payload."""
+    return load_fixture("earned_between.json")
+
+
+@pytest.fixture
+def game_rank_score_fixture() -> list:
+    """Return the sample GetUserGameRankAndScore payload."""
+    return load_fixture("game_rank_score.json")
+
+
+@pytest.fixture
 def mock_api_client(
     user_summary_fixture,
     aotw_fixture,
@@ -120,6 +132,8 @@ def mock_api_client(
     earned_on_day_fixture,
     recent_game_awards_fixture,
     user_game_leaderboards_fixture,
+    earned_between_fixture,
+    game_rank_score_fixture,
 ):
     """Return an AsyncMock API client preloaded with fixture responses."""
     # Local import to keep the heavy HA import out of fixture-discovery time
@@ -148,4 +162,6 @@ def mock_api_client(
     client.async_get_user_game_leaderboards.return_value = (
         user_game_leaderboards_fixture
     )
+    client.async_get_achievements_earned_between.return_value = earned_between_fixture
+    client.async_get_user_game_rank_and_score.return_value = game_rank_score_fixture
     return client

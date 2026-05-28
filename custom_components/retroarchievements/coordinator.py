@@ -15,6 +15,7 @@ from .const import (
     CONF_GAMING_IDLE_THRESHOLD,
     DEFAULT_GAMING_IDLE_THRESHOLD,
     DOMAIN,
+    EARNED_HISTORY_DAYS,
     EVENT_ACHIEVEMENT_UNLOCKED,
     EVENT_AOTW_CHANGED,
     EVENT_AWARD_EARNED,
@@ -221,7 +222,11 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> dict:
         try:
-            today = dt_util.now().strftime("%Y-%m-%d")
+            now = dt_util.now()
+            today = now.strftime("%Y-%m-%d")
+            history_start = (now - timedelta(days=EARNED_HISTORY_DAYS)).strftime(
+                "%Y-%m-%d"
+            )
             (
                 user_summary,
                 game_data,
@@ -236,6 +241,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 set_requests,
                 earned_on_day,
                 recent_game_awards,
+                earned_between,
             ) = await asyncio.gather(
                 self.api_client.async_get_user_summary(),
                 self._get_game_data(),
@@ -268,6 +274,12 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 ),
                 self._safe_get(
                     self.api_client.async_get_recent_game_awards, "recent game awards"
+                ),
+                self._safe_get_list(
+                    lambda: self.api_client.async_get_achievements_earned_between(
+                        history_start, today
+                    ),
+                    "achievements earned between",
                 ),
             )
 
@@ -320,6 +332,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 "set_requests": set_requests,
                 "earned_on_day": earned_on_day,
                 "recent_game_awards": recent_game_awards,
+                "earned_between": earned_between,
                 **game_data,
             }
         except Exception as error:
@@ -399,7 +412,7 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.monitored_games = monitored_game_ids
 
-        game_data = {"Awarded": {}, "Leaderboards": {}}
+        game_data = {"Awarded": {}, "Leaderboards": {}, "RankScore": {}}
         if not monitored_game_ids:
             return game_data
 
@@ -412,9 +425,14 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
             self.api_client.async_get_user_game_leaderboards(game_id)
             for game_id in game_ids
         ]
+        rank_score_tasks = [
+            self.api_client.async_get_user_game_rank_and_score(game_id)
+            for game_id in game_ids
+        ]
 
         game_progresses = await asyncio.gather(*progress_tasks, return_exceptions=True)
         leaderboards = await asyncio.gather(*leaderboard_tasks, return_exceptions=True)
+        rank_scores = await asyncio.gather(*rank_score_tasks, return_exceptions=True)
 
         for i, game_id in enumerate(game_ids):
             game_id_str = str(game_id)
@@ -434,5 +452,15 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 )
             elif isinstance(leaderboard, dict):
                 game_data["Leaderboards"][game_id_str] = leaderboard
+
+            rank_score = rank_scores[i]
+            if isinstance(rank_score, Exception):
+                LOGGER.warning(
+                    "Error fetching rank/score for game_id=%s: %s",
+                    game_id,
+                    rank_score,
+                )
+            elif isinstance(rank_score, list) and rank_score:
+                game_data["RankScore"][game_id_str] = rank_score[0]
 
         return game_data

@@ -54,6 +54,31 @@ _SOCIAL_KEYS = frozenset(
     }
 )
 
+_EXTRA_KEYS = frozenset(
+    {
+        "want_to_play_count",
+        "last_achievement",
+    }
+)
+
+
+def _latest_achievement(coordinator_data: dict) -> dict | None:
+    """Return the most recently unlocked achievement across all games, or None."""
+    recent = (coordinator_data or {}).get("RecentAchievements") or {}
+    latest: dict | None = None
+    for achievements in recent.values():
+        if not isinstance(achievements, dict):
+            continue
+        for achievement in achievements.values():
+            if not isinstance(achievement, dict):
+                continue
+            if latest is None or str(achievement.get("DateAwarded", "")) > str(
+                latest.get("DateAwarded", "")
+            ):
+                latest = achievement
+    return latest
+
+
 USER_SENSORS = [
     SensorEntityDescription(
         key="username",
@@ -192,6 +217,18 @@ USER_SENSORS = [
         icon="mdi:trophy-variant",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    SensorEntityDescription(
+        key="want_to_play_count",
+        translation_key="want_to_play_count",
+        icon="mdi:playlist-star",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="last_achievement",
+        translation_key="last_achievement",
+        icon="mdi:trophy",
+    ),
 ]
 
 
@@ -321,10 +358,23 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
                 recent_game = data["RecentlyPlayed"][0]
                 return f"{recent_game.get('Title')} - {recent_game.get('ConsoleName')}"
             return "None"
-        if self._key in _STAT_KEYS:
-            return self._stat_value()
-        if self._key in _SOCIAL_KEYS:
-            return self._social_value()
+        for keyset, handler in (
+            (_STAT_KEYS, self._stat_value),
+            (_SOCIAL_KEYS, self._social_value),
+            (_EXTRA_KEYS, self._extra_value),
+        ):
+            if self._key in keyset:
+                return handler()
+        return None
+
+    def _extra_value(self):
+        """Return a value for keys derived from already-fetched coordinator data."""
+        data = self.coordinator.data
+        if self._key == "want_to_play_count":
+            return (data.get("want_to_play") or {}).get("Total", 0)
+        if self._key == "last_achievement":
+            latest = _latest_achievement(data)
+            return latest.get("Title") if latest else None
         return None
 
     def _social_value(self):
@@ -407,6 +457,39 @@ class RetroAchievementsUserSensor(RetroAchievementsBaseSensor):
         if self._key in _SOCIAL_KEYS:
             return self._social_attributes()
 
+        if self._key in _EXTRA_KEYS:
+            return self._extra_attributes()
+
+        return {}
+
+    def _extra_attributes(self):
+        """Return state attributes for the derived extra sensors."""
+        data = self.coordinator.data
+        if self._key == "want_to_play_count":
+            return {"games": (data.get("want_to_play") or {}).get("Results", [])}
+        if self._key == "last_achievement":
+            latest = _latest_achievement(data)
+            if not latest:
+                return {}
+            badge = latest.get("BadgeName")
+            return {
+                "id": latest.get("ID"),
+                "title": latest.get("Title"),
+                "description": latest.get("Description"),
+                "points": latest.get("Points"),
+                "game": latest.get("GameTitle"),
+                "date_awarded": latest.get("DateAwarded"),
+                "badge_url": (
+                    f"https://retroachievements.org/Badge/{badge}.png"
+                    if badge
+                    else None
+                ),
+                "url": (
+                    f"https://retroachievements.org/achievement/{latest.get('ID')}"
+                    if latest.get("ID")
+                    else None
+                ),
+            }
         return {}
 
     def _social_attributes(self):
@@ -615,6 +698,15 @@ class RetroAchievementsGameSensor(RetroAchievementsBaseSensor):
         )
         if results:
             attrs["leaderboards"] = results
+        rank_score = (
+            (self.coordinator.data or {})
+            .get("RankScore", {})
+            .get(str(self._game_id), {})
+        )
+        if isinstance(rank_score, dict) and rank_score:
+            attrs["user_rank"] = rank_score.get("UserRank")
+            attrs["user_total_score"] = rank_score.get("TotalScore")
+            attrs["last_award"] = rank_score.get("LastAward")
         return attrs
 
 

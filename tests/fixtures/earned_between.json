@@ -1,0 +1,5 @@
+[
+  {"ID": 55401, "Title": "First Steps", "Description": "Start a new game", "GameID": 678, "GameTitle": "Sonic the Hedgehog", "ConsoleName": "Mega Drive", "Points": 5, "BadgeName": "11001", "HardcoreMode": 1, "Date": "2026-05-20 09:00:00"},
+  {"ID": 55402, "Title": "Speed Demon", "Description": "Finish a level fast", "GameID": 678, "GameTitle": "Sonic the Hedgehog", "ConsoleName": "Mega Drive", "Points": 10, "BadgeName": "11002", "HardcoreMode": 1, "Date": "2026-05-20 09:30:00"},
+  {"ID": 55403, "Title": "Brawler", "Description": "Defeat 50 enemies", "GameID": 700, "GameTitle": "Streets of Rage", "ConsoleName": "Mega Drive", "Points": 25, "BadgeName": "11003", "HardcoreMode": 0, "Date": "2026-05-22 18:45:00"}
+]
