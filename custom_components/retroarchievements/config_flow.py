@@ -6,7 +6,10 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_USERNAME
 from homeassistant.helpers import selector
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import (
+    async_create_clientsession,
+    async_get_clientsession,
+)
 
 from .api import (
     RetroAchievementsApiClient,
@@ -22,6 +25,9 @@ from .const import (
     DOMAIN,
     LOGGER,
 )
+
+CONF_CONSOLE = "console"
+CONF_GAMES = "games"
 
 
 class RetroAchievementsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -154,19 +160,160 @@ class RetroAchievementsOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
         self.config_entry = config_entry
+        raw = config_entry.options.get(CONF_MONITORED_GAMES, "") or ""
+        self._monitored: set[str] = {
+            line.strip() for line in raw.splitlines() if line.strip()
+        }
+        self._idle_threshold: int = config_entry.options.get(
+            CONF_GAMING_IDLE_THRESHOLD, DEFAULT_GAMING_IDLE_THRESHOLD
+        )
+        self._selected_console: str | None = None
+        self._console_games: list[dict] = []
+
+    def _client(self) -> RetroAchievementsApiClient:
+        """Build an API client from the stored credentials."""
+        return RetroAchievementsApiClient(
+            username=self.config_entry.data[CONF_USERNAME],
+            api_key=self.config_entry.data[CONF_API_KEY],
+            session=async_get_clientsession(self.hass),
+        )
+
+    def _serialize_monitored(self) -> str:
+        """Return monitored game IDs as a newline-separated string, numerically sorted."""
+
+        def _key(value: str) -> tuple[int, str]:
+            return (int(value), "") if value.isdigit() else (1 << 62, value)
+
+        return "\n".join(sorted(self._monitored, key=_key))
+
+    def _save(self) -> config_entries.ConfigFlowResult:
+        """Persist the current monitored games and settings."""
+        return self.async_create_entry(
+            title="",
+            data={
+                CONF_MONITORED_GAMES: self._serialize_monitored(),
+                CONF_GAMING_IDLE_THRESHOLD: self._idle_threshold,
+            },
+        )
 
     async def async_step_init(
-        self, user_input: dict | None = None
-    ) -> config_entries.FlowResult:
-        """Manage the options."""
-        if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+        self, _user_input: dict | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Show the options menu."""
+        return self.async_show_menu(
+            step_id="init",
+            menu_options=["select_games", "manage"],
+        )
 
-        # Add game selection to options later
+    async def async_step_select_games(
+        self, user_input: dict | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Pick a console to browse its games."""
+        try:
+            consoles = await self._client().async_get_console_ids()
+        except Exception as err:  # pylint: disable=broad-except
+            LOGGER.warning("Failed to fetch console list: %s", err)
+            consoles = []
+
+        if not consoles:
+            # No console data available; fall back to manual editing.
+            return await self.async_step_manage(error="cannot_load_games")
+
+        if user_input is not None:
+            self._selected_console = user_input[CONF_CONSOLE]
+            return await self.async_step_pick_games()
+
+        options = [
+            selector.SelectOptionDict(
+                value=str(console.get("ID")),
+                label=console.get("Name") or str(console.get("ID")),
+            )
+            for console in consoles
+            if console.get("ID") is not None
+        ]
+        return self.async_show_form(
+            step_id="select_games",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_CONSOLE): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=options,
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                            sort=True,
+                        ),
+                    ),
+                },
+            ),
+        )
+
+    async def async_step_pick_games(
+        self, user_input: dict | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Select which games of the chosen console to monitor."""
+        console_id = self._selected_console
+        try:
+            self._console_games = await self._client().async_get_game_list(
+                int(console_id)
+            )
+        except (ValueError, TypeError):
+            self._console_games = []
+        except Exception as err:  # pylint: disable=broad-except
+            LOGGER.warning(
+                "Failed to fetch game list for console %s: %s", console_id, err
+            )
+            self._console_games = []
+
+        console_game_ids = {
+            str(game.get("ID")) for game in self._console_games if game.get("ID")
+        }
+
+        if user_input is not None:
+            selected = {str(g) for g in user_input.get(CONF_GAMES, [])}
+            # Replace only this console's games; keep games from other consoles.
+            self._monitored = (self._monitored - console_game_ids) | selected
+            return self._save()
+
+        options = [
+            selector.SelectOptionDict(
+                value=str(game.get("ID")),
+                label=game.get("Title") or str(game.get("ID")),
+            )
+            for game in self._console_games
+            if game.get("ID") is not None
+        ]
+        current = sorted(self._monitored & console_game_ids)
+        return self.async_show_form(
+            step_id="pick_games",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_GAMES, default=current): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=options,
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                            multiple=True,
+                            sort=True,
+                        ),
+                    ),
+                },
+            ),
+        )
+
+    async def async_step_manage(
+        self, user_input: dict | None = None, error: str | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Edit the raw monitored-game list and idle threshold."""
+        if user_input is not None:
+            raw = user_input.get(CONF_MONITORED_GAMES, "") or ""
+            self._monitored = {
+                line.strip() for line in raw.splitlines() if line.strip()
+            }
+            self._idle_threshold = user_input[CONF_GAMING_IDLE_THRESHOLD]
+            return self._save()
+
         options = {
             vol.Optional(
                 CONF_MONITORED_GAMES,
-                default=self.config_entry.options.get(CONF_MONITORED_GAMES, ""),
+                default=self._serialize_monitored(),
             ): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.TEXT,
@@ -175,13 +322,11 @@ class RetroAchievementsOptionsFlowHandler(config_entries.OptionsFlow):
             ),
             vol.Optional(
                 CONF_GAMING_IDLE_THRESHOLD,
-                default=self.config_entry.options.get(
-                    CONF_GAMING_IDLE_THRESHOLD, DEFAULT_GAMING_IDLE_THRESHOLD
-                ),
+                default=self._idle_threshold,
             ): vol.All(vol.Coerce(int), vol.Range(min=1, max=60)),
         }
-
         return self.async_show_form(
-            step_id="init",
+            step_id="manage",
             data_schema=vol.Schema(options),
+            errors={"base": error} if error else None,
         )

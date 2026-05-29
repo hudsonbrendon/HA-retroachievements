@@ -14,6 +14,7 @@ PLATFORMS = [
     Platform.IMAGE,
     Platform.TODO,
     Platform.BUTTON,
+    Platform.CALENDAR,
 ]
 
 # API
@@ -47,6 +48,9 @@ ATTRIBUTION = "Data provided by RetroAchievements"
 # Options
 CONF_GAMING_IDLE_THRESHOLD = "gaming_idle_threshold"
 DEFAULT_GAMING_IDLE_THRESHOLD = 5  # minutes
+
+# Number of trailing days of unlock history exposed via the calendar entity.
+EARNED_HISTORY_DAYS = 14
 
 # Services
 SERVICE_REFRESH = "refresh"

@@ -57,6 +57,16 @@ Sourced from the RetroAchievements `GetUserPoints`, `GetUserCompletionProgress`,
 | `sensor.retroachievements_USERNAME_games_beaten` | Number of games beaten (hardcore + softcore) |
 | `sensor.retroachievements_USERNAME_games_played` | Number of games played |
 | `sensor.retroachievements_USERNAME_awards_total` | Total site awards earned |
+| `sensor.retroachievements_USERNAME_want_to_play_count` | Number of games in your "Want to Play" backlog (attributes: full game list) |
+| `sensor.retroachievements_USERNAME_last_achievement` | Title of your most recently unlocked achievement (attributes: id, description, points, game, date, badge URL) |
+
+### Calendar
+
+Sourced from the `GetAchievementsEarnedBetween` endpoint (trailing 14 days).
+
+| Entity | Description |
+|--------|-------------|
+| `calendar.retroachievements_USERNAME_achievements` | One event per achievement unlocked over the last 14 days |
 
 ### Image, Todo & Button Entities
 
@@ -76,6 +86,15 @@ For each recently played game, the integration creates:
 | `sensor.retroachievements_game_GAME_ID` | Completion percentage for the game | Game details including ID, console, achievements (total/earned), points (total/earned), last played date, game images, and recently unlocked achievements |
 
 All game sensors are grouped under your RetroAchievements user device for easy organization.
+
+### Monitoring specific games
+
+Open the integration's **Configure** dialog to pick which games to monitor:
+
+- **Select games to monitor** — choose a console, then multi-select its games from a searchable dropdown (only games that have achievements are listed). Selecting games for one console keeps games already chosen on other consoles.
+- **Edit game IDs & settings** — edit the raw newline-separated game ID list directly (useful for removal or bulk edits) and set the gaming idle threshold.
+
+Monitored games gain progress, leaderboard, and rank/score data.
 
 ## Attributes
 
@@ -120,6 +139,10 @@ All game sensors are grouped under your RetroAchievements user device for easy o
 - `points_earned`: Points earned
 - `completion_percentage`: Game completion percentage
 - `recent_achievements`: List of recently unlocked achievements for this game
+- `leaderboards`: Your leaderboard entries for the game (monitored games)
+- `user_rank`: Your rank within the game, from `GetUserGameRankAndScore` (monitored games)
+- `user_total_score`: Your total score within the game (monitored games)
+- `last_award`: Timestamp of your most recent award in the game (monitored games)
 
 ## Use Cases
 

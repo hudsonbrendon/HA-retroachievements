@@ -31,11 +31,37 @@
         "step": {
             "init": {
                 "title": "Opções do RetroAchievements",
-                "description": "Configure as opções para o RetroAchievements.",
+                "description": "Escolha o que configurar.",
+                "menu_options": {
+                    "select_games": "Selecionar jogos para monitorar",
+                    "manage": "Editar IDs de jogos e ajustes"
+                }
+            },
+            "select_games": {
+                "title": "Selecionar um console",
+                "description": "Escolha um console para listar seus jogos.",
                 "data": {
-                    "monitored_games": "IDs dos jogos para monitorar (um ID por linha)"
+                    "console": "Console"
+                }
+            },
+            "pick_games": {
+                "title": "Selecionar jogos",
+                "description": "Escolha quais jogos deste console monitorar. Jogos de outros consoles são mantidos.",
+                "data": {
+                    "games": "Jogos"
+                }
+            },
+            "manage": {
+                "title": "IDs de jogos e ajustes",
+                "description": "Edite os IDs dos jogos monitorados diretamente e ajuste as configurações.",
+                "data": {
+                    "monitored_games": "IDs dos jogos para monitorar (um ID por linha)",
+                    "gaming_idle_threshold": "Limite de inatividade de jogo (minutos)"
                 }
             }
+        },
+        "error": {
+            "cannot_load_games": "Não foi possível carregar o catálogo de jogos do RetroAchievements. Edite os IDs manualmente abaixo."
         }
     },
     "entity": {
@@ -200,6 +226,27 @@
             },
             "top_ten": {
                 "name": "Líder do Top 10"
+            },
+            "want_to_play_count": {
+                "name": "Total Quero Jogar"
+            },
+            "last_achievement": {
+                "name": "Última Conquista",
+                "state_attributes": {
+                    "id": "ID",
+                    "title": "Título",
+                    "description": "Descrição",
+                    "points": "Pontos",
+                    "game": "Jogo",
+                    "date_awarded": "Data de Obtenção",
+                    "badge_url": "URL do Emblema",
+                    "url": "URL da Conquista"
+                }
+            }
+        },
+        "calendar": {
+            "achievements": {
+                "name": "Conquistas"
             }
         },
         "image": {
