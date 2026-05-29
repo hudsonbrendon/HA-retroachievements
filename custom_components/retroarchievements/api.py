@@ -251,6 +251,22 @@ class RetroAchievementsApiClient:
         )
         return response if isinstance(response, list) else []
 
+    async def async_get_console_ids(self) -> list[dict[str, Any]]:
+        """Get the list of console/system IDs (active game systems only)."""
+        response = await self._api_wrapper(
+            endpoint="API_GetConsoleIDs.php",
+            params={"a": 1, "g": 1, "y": self._api_key},
+        )
+        return response if isinstance(response, list) else []
+
+    async def async_get_game_list(self, console_id: int) -> list[dict[str, Any]]:
+        """Get games (with achievements) for a console."""
+        response = await self._api_wrapper(
+            endpoint="API_GetGameList.php",
+            params={"i": console_id, "f": 1, "h": 0, "y": self._api_key},
+        )
+        return response if isinstance(response, list) else []
+
     async def async_get_achievements_earned_between(
         self, from_date: str, to_date: str
     ) -> list[dict[str, Any]]:

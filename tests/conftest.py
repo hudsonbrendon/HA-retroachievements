@@ -117,6 +117,18 @@ def game_rank_score_fixture() -> list:
 
 
 @pytest.fixture
+def console_ids_fixture() -> list:
+    """Return the sample GetConsoleIDs payload."""
+    return load_fixture("console_ids.json")
+
+
+@pytest.fixture
+def game_list_fixture() -> list:
+    """Return the sample GetGameList payload."""
+    return load_fixture("game_list.json")
+
+
+@pytest.fixture
 def mock_api_client(
     user_summary_fixture,
     aotw_fixture,
@@ -164,4 +176,6 @@ def mock_api_client(
     )
     client.async_get_achievements_earned_between.return_value = earned_between_fixture
     client.async_get_user_game_rank_and_score.return_value = game_rank_score_fixture
+    client.async_get_console_ids.return_value = load_fixture("console_ids.json")
+    client.async_get_game_list.return_value = load_fixture("game_list.json")
     return client

@@ -87,6 +87,15 @@ For each recently played game, the integration creates:
 
 All game sensors are grouped under your RetroAchievements user device for easy organization.
 
+### Monitoring specific games
+
+Open the integration's **Configure** dialog to pick which games to monitor:
+
+- **Select games to monitor** — choose a console, then multi-select its games from a searchable dropdown (only games that have achievements are listed). Selecting games for one console keeps games already chosen on other consoles.
+- **Edit game IDs & settings** — edit the raw newline-separated game ID list directly (useful for removal or bulk edits) and set the gaming idle threshold.
+
+Monitored games gain progress, leaderboard, and rank/score data.
+
 ## Attributes
 
 ### User Profile Attributes

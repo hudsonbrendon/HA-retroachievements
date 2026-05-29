@@ -34,12 +34,37 @@
         "step": {
             "init": {
                 "title": "RetroAchievements Options",
-                "description": "Configure options for RetroAchievements.",
+                "description": "Choose what to configure.",
+                "menu_options": {
+                    "select_games": "Select games to monitor",
+                    "manage": "Edit game IDs & settings"
+                }
+            },
+            "select_games": {
+                "title": "Select a console",
+                "description": "Pick a console to browse its games.",
+                "data": {
+                    "console": "Console"
+                }
+            },
+            "pick_games": {
+                "title": "Select games",
+                "description": "Choose which games of this console to monitor. Games from other consoles are kept.",
+                "data": {
+                    "games": "Games"
+                }
+            },
+            "manage": {
+                "title": "Game IDs & settings",
+                "description": "Edit the monitored game IDs directly and adjust settings.",
                 "data": {
                     "monitored_games": "Game IDs to monitor (one ID per line)",
                     "gaming_idle_threshold": "Gaming idle threshold (minutes)"
                 }
             }
+        },
+        "error": {
+            "cannot_load_games": "Could not load the game catalog from RetroAchievements. Edit game IDs manually below."
         }
     },
     "entity": {

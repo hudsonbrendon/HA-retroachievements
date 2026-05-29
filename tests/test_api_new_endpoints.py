@@ -113,3 +113,41 @@ async def test_get_user_game_rank_and_score_non_list_returns_empty(session):
         client = RetroAchievementsApiClient("TestUser", "key", session)
         result = await client.async_get_user_game_rank_and_score(678)
     assert result == []
+
+
+async def test_get_console_ids_returns_payload(session, console_ids_fixture):
+    url = re.compile(rf"^{re.escape(BASE_URL)}API_GetConsoleIDs\.php")
+    with aioresponses() as m:
+        m.get(url, payload=console_ids_fixture)
+        client = RetroAchievementsApiClient("TestUser", "key", session)
+        result = await client.async_get_console_ids()
+    assert len(result) == 3
+    assert result[0]["Name"] == "Mega Drive"
+
+
+async def test_get_console_ids_non_list_returns_empty(session):
+    url = re.compile(rf"^{re.escape(BASE_URL)}API_GetConsoleIDs\.php")
+    with aioresponses() as m:
+        m.get(url, payload={})
+        client = RetroAchievementsApiClient("TestUser", "key", session)
+        result = await client.async_get_console_ids()
+    assert result == []
+
+
+async def test_get_game_list_returns_payload(session, game_list_fixture):
+    url = re.compile(rf"^{re.escape(BASE_URL)}API_GetGameList\.php")
+    with aioresponses() as m:
+        m.get(url, payload=game_list_fixture)
+        client = RetroAchievementsApiClient("TestUser", "key", session)
+        result = await client.async_get_game_list(1)
+    assert len(result) == 3
+    assert result[0]["ID"] == 678
+
+
+async def test_get_game_list_non_list_returns_empty(session):
+    url = re.compile(rf"^{re.escape(BASE_URL)}API_GetGameList\.php")
+    with aioresponses() as m:
+        m.get(url, payload={})
+        client = RetroAchievementsApiClient("TestUser", "key", session)
+        result = await client.async_get_game_list(1)
+    assert result == []
