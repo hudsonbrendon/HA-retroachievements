@@ -312,9 +312,17 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                     except Exception as fire_err:  # pylint: disable=broad-except
                         LOGGER.warning("Failed to fire award_earned: %s", fire_err)
 
-            self._previous_achievement_ids = current_ids
+            # Accumulate seen IDs/keys instead of replacing them with the
+            # current poll. GetUserSummary only returns the most recent few
+            # achievements, so the window shifts and can transiently shrink
+            # (empty/partial API response). A plain replacement would drop the
+            # dropped-out IDs from the baseline and re-detect them as "new" when
+            # the window refilled, re-firing notifications for old achievements.
+            # Union keeps the baseline monotonic, so each unlock fires at most
+            # once for the coordinator's lifetime.
+            self._previous_achievement_ids |= current_ids
             self._previous_aotw_id = aotw_id
-            self._previous_award_keys = current_award_keys
+            self._previous_award_keys |= current_award_keys
             self._first_run = False
 
             return {

@@ -100,6 +100,43 @@ async def test_no_new_achievements_fires_no_events(hass, mock_api_client, mock_e
     assert fired == []
 
 
+async def test_window_churn_does_not_refire_old_achievement(
+    hass, mock_api_client, mock_entry, user_summary_fixture
+):
+    """A transient empty RecentAchievements window must not refire old IDs.
+
+    Regression: GetUserSummary returns only the 5 most recent achievements.
+    If a poll transiently returns an empty/partial window and a later poll
+    refills it, the old achievement IDs must NOT be re-detected as new.
+    """
+    fired = []
+    hass.bus.async_listen(EVENT_ACHIEVEMENT_UNLOCKED, lambda e: fired.append(e))
+
+    coord = RetroAchievementsDataUpdateCoordinator(hass, mock_api_client, mock_entry)
+
+    # First refresh: baseline contains achievement 12345
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert fired == []
+
+    # Second refresh: transient empty window (API hiccup / no recent data)
+    mock_api_client.async_get_user_summary.return_value = {
+        **user_summary_fixture,
+        "RecentAchievements": {},
+    }
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert fired == []
+
+    # Third refresh: window refills with the SAME old achievement
+    mock_api_client.async_get_user_summary.return_value = user_summary_fixture
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+
+    # Old achievement 12345 must NOT refire
+    assert fired == []
+
+
 async def test_aotw_change_fires_event(hass, mock_api_client, mock_entry, aotw_fixture):
     fired = []
     hass.bus.async_listen(EVENT_AOTW_CHANGED, lambda e: fired.append(e))
