@@ -27,8 +27,15 @@ CONF_MONITORED_GAMES = "monitored_games"
 
 # Defaults
 DEFAULT_NAME = "RetroAchievements"
-DEFAULT_SCAN_INTERVAL = 1  # minutes
-UPDATE_INTERVAL = 60  # seconds (1 minute in seconds)
+DEFAULT_SCAN_INTERVAL = 5  # minutes
+# Each refresh fans out into ~14 API calls (plus 3 per monitored game); the
+# RetroAchievements API rate-limits aggressively, so polling faster than this
+# produces sustained 429 storms.
+UPDATE_INTERVAL = 300  # seconds
+
+# Maximum concurrent requests against the RetroAchievements API. Their edge
+# throttles bursts well below the per-minute quota, so keep this low.
+MAX_CONCURRENT_REQUESTS = 2
 
 # Entity attributes
 ATTR_GAME_ID = "game_id"

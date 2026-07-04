@@ -7,10 +7,10 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import RetroAchievementsApiClient
+from .api import RetroAchievementsApiClient, RetroAchievementsApiClientError
 from .const import (
     CONF_GAMING_IDLE_THRESHOLD,
     DEFAULT_GAMING_IDLE_THRESHOLD,
@@ -343,6 +343,11 @@ class RetroAchievementsDataUpdateCoordinator(DataUpdateCoordinator):
                 "earned_between": earned_between,
                 **game_data,
             }
+        except RetroAchievementsApiClientError as error:
+            # Communication/rate-limit errors are expected operational
+            # failures: surface them as UpdateFailed so the coordinator logs
+            # a single clean message instead of a full traceback every cycle.
+            raise UpdateFailed(str(error)) from error
         except Exception as error:
             LOGGER.error("Unexpected error fetching retroachievements data: %s", error)
             raise

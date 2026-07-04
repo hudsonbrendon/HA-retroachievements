@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import socket
 from typing import Any
 
 import aiohttp
 import async_timeout
 
-from .const import BASE_URL
+from .const import BASE_URL, MAX_CONCURRENT_REQUESTS
 
 
 class RetroAchievementsApiClientError(Exception):
@@ -27,6 +28,12 @@ class RetroAchievementsApiClientAuthenticationError(
     """Exception to indicate an authentication error."""
 
 
+class RetroAchievementsApiClientRateLimitError(
+    RetroAchievementsApiClientCommunicationError,
+):
+    """Exception to indicate the API rate limit was hit (HTTP 429)."""
+
+
 class RetroAchievementsApiClient:
     """RetroAchievements API Client."""
 
@@ -40,6 +47,9 @@ class RetroAchievementsApiClient:
         self._username = username
         self._api_key = api_key
         self._session = session
+        # Serialize bursts: the coordinator fans out many calls per refresh
+        # and the RA edge throttles aggressively (429).
+        self._semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
     @property
     def username(self) -> str:
@@ -291,12 +301,16 @@ class RetroAchievementsApiClient:
         url = f"{BASE_URL}{endpoint}"
 
         try:
-            async with async_timeout.timeout(10):
+            async with self._semaphore, async_timeout.timeout(30):
                 response = await self._session.get(url=url, params=params)
 
                 if response.status == 401:
                     raise RetroAchievementsApiClientAuthenticationError(
                         "Invalid API key or username",
+                    )
+                if response.status == 429:
+                    raise RetroAchievementsApiClientRateLimitError(
+                        "Rate limited by the RetroAchievements API (429)",
                     )
                 response.raise_for_status()
 
@@ -309,6 +323,8 @@ class RetroAchievementsApiClient:
 
                 return data
 
+        except RetroAchievementsApiClientError:
+            raise
         except TimeoutError as exception:
             msg = f"Timeout error fetching information - {exception}"
             raise RetroAchievementsApiClientCommunicationError(
