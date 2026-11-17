@@ -1,10 +1,24 @@
+<p align="center">
+  <img src="custom_components/retroarchievements/brand/logo@2x.png" alt="RetroAchievements" height="128">
+</p>
+
 # RetroAchievements for Home Assistant
 
-![RetroAchievements Logo](logo.png)
+[![Tests](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/tests.yml/badge.svg)](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/tests.yml)
+[![Hassfest](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/hassfest.yml/badge.svg)](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/hassfest.yml)
+[![HACS](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/validate.yml/badge.svg)](https://github.com/hudsonbrendon/HA-retroachievements/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/HA-retroachievements?sort=semver)](https://github.com/hudsonbrendon/HA-retroachievements/releases)
+[![Downloads](https://img.shields.io/github/downloads/hudsonbrendon/HA-retroachievements/total)](https://github.com/hudsonbrendon/HA-retroachievements/releases)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.2.4%2B-18BCF2?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![License](https://img.shields.io/github/license/hudsonbrendon/HA-retroachievements)](LICENSE)
 
 This integration allows you to monitor your RetroAchievements stats and progress in Home Assistant.
 
 ## Installation
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hudsonbrendon&repository=HA-retroachievements&category=integration)
+[![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=retroarchievements)
 
 ### HACS (Recommended)
 1. Make sure you have [HACS](https://hacs.xyz/) installed.

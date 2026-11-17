@@ -1,4 +1,4 @@
-"""RetroAchievements calendar platform: recent unlocks as calendar events."""
+"""RetroAchievements calendar platform: recent unlocks as calendar events."""  # noqa: CPY001
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Diagnostics support for the RetroAchievements integration."""
+"""Diagnostics support for the RetroAchievements integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

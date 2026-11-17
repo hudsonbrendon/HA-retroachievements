@@ -1,4 +1,4 @@
-"""RetroAchievements API Client."""
+"""RetroAchievements API Client."""  # noqa: CPY001
 
 from __future__ import annotations
 

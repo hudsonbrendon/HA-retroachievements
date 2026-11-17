@@ -1,4 +1,4 @@
-"""Button platform for the RetroAchievements integration."""
+"""Button platform for the RetroAchievements integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

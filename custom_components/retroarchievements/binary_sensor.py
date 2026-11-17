@@ -1,4 +1,4 @@
-"""Binary sensors for the RetroAchievements integration."""
+"""Binary sensors for the RetroAchievements integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

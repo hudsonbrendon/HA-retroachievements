@@ -1,4 +1,4 @@
-"""Shared helpers for RetroAchievements entities."""
+"""Shared helpers for RetroAchievements entities."""  # noqa: CPY001
 
 from __future__ import annotations
 

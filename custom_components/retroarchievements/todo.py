@@ -1,4 +1,4 @@
-"""Todo platform exposing the user's 'Want to Play' backlog (read-only)."""
+"""Todo platform exposing the user's 'Want to Play' backlog (read-only)."""  # noqa: CPY001
 
 from __future__ import annotations
 

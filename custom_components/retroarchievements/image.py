@@ -1,4 +1,4 @@
-"""Image platform: current game box art and last achievement badge."""
+"""Image platform: current game box art and last achievement badge."""  # noqa: CPY001
 
 from __future__ import annotations
 

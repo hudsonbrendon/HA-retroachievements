@@ -1,4 +1,4 @@
-"""Constants for the RetroAchievements integration."""
+"""Constants for the RetroAchievements integration."""  # noqa: CPY001
 
 from logging import Logger, getLogger
 

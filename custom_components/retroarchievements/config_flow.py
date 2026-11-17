@@ -1,4 +1,4 @@
-"""Config flow for RetroAchievements."""
+"""Config flow for RetroAchievements."""  # noqa: CPY001
 
 from __future__ import annotations
 

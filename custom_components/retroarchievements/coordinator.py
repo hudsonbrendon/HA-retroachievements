@@ -1,4 +1,4 @@
-"""Data update coordinator for the RetroAchievements integration."""
+"""Data update coordinator for the RetroAchievements integration."""  # noqa: CPY001
 
 from __future__ import annotations
 

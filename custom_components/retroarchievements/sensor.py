@@ -1,4 +1,4 @@
-"""RetroAchievements sensor platform."""
+"""RetroAchievements sensor platform."""  # noqa: CPY001
 
 from __future__ import annotations
 

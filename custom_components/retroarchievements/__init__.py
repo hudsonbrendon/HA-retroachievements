@@ -1,4 +1,4 @@
-"""The RetroAchievements integration."""
+"""The RetroAchievements integration."""  # noqa: CPY001
 
 from __future__ import annotations
 
