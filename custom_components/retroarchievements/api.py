@@ -7,7 +7,6 @@ import socket
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 from .const import BASE_URL, MAX_CONCURRENT_REQUESTS
 
@@ -301,7 +300,7 @@ class RetroAchievementsApiClient:
         url = f"{BASE_URL}{endpoint}"
 
         try:
-            async with self._semaphore, async_timeout.timeout(30):
+            async with self._semaphore, asyncio.timeout(30):
                 response = await self._session.get(url=url, params=params)
 
                 if response.status == 401:

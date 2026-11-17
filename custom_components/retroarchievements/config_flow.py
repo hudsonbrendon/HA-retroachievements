@@ -159,7 +159,6 @@ class RetroAchievementsOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
         raw = config_entry.options.get(CONF_MONITORED_GAMES, "") or ""
         self._monitored: set[str] = {
             line.strip() for line in raw.splitlines() if line.strip()
